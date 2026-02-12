@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 import dataclasses
 import random
+from dataclasses import dataclass
 from typing import Callable, Final, List, Optional, TypedDict, Union
 
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
@@ -8,9 +9,31 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 # example: base
 
 
-def test_const_var():
+def test_var_ops():
     main_mode: Final[str] = "main"
     print("mode:", main_mode)
+
+
+def test_dict_ops():
+    d = {
+        "5": "five",
+        "2": "two",
+        "1": "one",
+        "8": "eight",
+        "4": "four",
+        "10": "ten",
+    }
+    # iterate in order
+    for item in d.items():
+        print(item)
+
+    # get 1st key, and pop item
+    k = next(iter(d))
+    d.pop(k)
+
+    print("\nafter pop:")
+    for item in d.items():
+        print(item)
 
 
 def test_cal_division():
@@ -52,14 +75,28 @@ def test_class_with_typeddict():
 # parameters: slots=True, frozen=True, kw_only=True, order=True
 
 
-@dataclasses.dataclass(slots=True, frozen=True, kw_only=True)
+@dataclass
+class User:
+    user_id: int
+    username: str
+    email: str
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(**data)
+
+    def to_dict(self) -> dict:
+        return dataclasses.asdict(self)
+
+
+@dataclass(slots=True, frozen=True, kw_only=True)
 class Address:
     street: str
     city: str
     zip_code: str
 
 
-@dataclasses.dataclass(slots=True, frozen=True, kw_only=True)
+@dataclass(slots=True, frozen=True, kw_only=True)
 class Person:
     name: str
     age: int
@@ -135,10 +172,11 @@ def test_my_call_with_retry():
 
 
 if __name__ == "__main__":
-    # test_const_var()
+    # test_var_ops()
+    test_dict_ops()
     # test_cal_division()
 
     # test_class_with_typeddict()
     # test_datacls_and_dict()
 
-    test_my_call_with_retry()
+    # test_my_call_with_retry()

@@ -5,10 +5,13 @@
     "${workspaceFolder}/.venv/lib/python3.12/site-packages"
   ],
   "python.languageServer": "Pylance",
+
   "python.analysis.extraPaths": [
     "${workspaceFolder}/.venv/lib/python3.12/site-packages"
   ],
   "python.analysis.typeCheckingMode": "standard",
+  "python.analysis.indexing": true,
+  "python.analysis.autoImportCompletions": true,
 
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
