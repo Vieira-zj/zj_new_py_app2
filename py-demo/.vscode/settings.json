@@ -1,0 +1,26 @@
+{
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3.12",
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+  ],
+  "python.languageServer": "Pylance",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+  ],
+  "python.analysis.typeCheckingMode": "standard",
+
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "isort.args": ["--profile", "black"],
+  "pylint.args": [
+    "--disable=E0401,E0601,W0123,W0603,W0718,W0719,C0114,C0115,C0116,C0103,C0209,C0301,C0415,no-name-in-module"
+  ],
+  "pylint.interpreter": ["${workspaceFolder}/.venv/bin/python3.12"]
+  // "python.linting.pylintArgs": ["--generate-members"] // for pytest and allure
+}

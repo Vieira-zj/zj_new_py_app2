@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browser Sandbox VNC</title>
+    <style>
+        body { margin: 0; padding: 0; background: #000; }
+        #vnc-container { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="vnc-container"></div>
+    <script type="module">
+        const params = new URLSearchParams(window.location.search);
+        const vncUrl = params.get('url');
+        if (!vncUrl) {
+            alert('pls provide parameter: VNC URL');
+        } else {
+            const module = await import('https://cdn.jsdelivr.net/gh/novnc/noVNC@v1.4.0/core/rfb.js');
+            const RFB = module.default;
+            const rfb = new RFB(
+                document.getElementById('vnc-container'),
+                vncUrl,
+                { shared: true, credentials: { password: '' } }
+            );
+            rfb.scaleViewport = true;
+        }
+    </script>
+</body>
+</html>
