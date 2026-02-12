@@ -158,6 +158,9 @@ def test_parse_html_03():
 </html>"""
 
     soup = BeautifulSoup(markup=html_doc, features="html.parser")
+
+    # children: direct sub nodes
+    # descendants: all sub nodes
     for element in soup.descendants:
         if not isinstance(element, Tag):
             continue
@@ -172,6 +175,31 @@ def test_parse_html_03():
                 print(element.prettify())
                 print("\nmarkdown table:")
                 print_html_table_as_markdown(element)
+
+
+def test_find_ui_element():
+    html = """
+<html>
+  <body>
+    <h2 class="title">文章1</h2>
+    <h2 class="title">文章2</h2>
+    <h2>别的内容</h2>
+    <p id="info">这里是一个段落</p>
+  </body>
+</html>
+"""
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    # find by class
+    titles = soup.find_all("h2", class_="title")
+    for title in titles:
+        print("title:", title.text)
+
+    # find by id
+    info = soup.find("p", id="info")
+    if info:
+        print("find paragraph", info.text)
 
 
 if __name__ == "__main__":
