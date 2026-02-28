@@ -28,20 +28,62 @@ def test_torch_tensor_01():
 def test_torch_tensor_02():
     t = torch.arange(5)
     print(f"arange:\n{t}")
-    print()
 
     t = torch.empty(2, 2)
-    print(f"empty:\n{t}")
+    print(f"\nempty:\n{t}")
     t = torch.zeros((2, 2))
     print(f"zeros:\n{t}")
     t = torch.ones((2, 2))
     print(f"ones:\n{t}")
-    print()
 
     t = torch.rand(3, 3)
-    print(f"rand:\n{t}")
-    t = torch.randn(3, 3)
+    print(f"\nrand:\n{t}")
+    t = torch.randn((3, 3))
     print(f"randn:\n{t}")
+
+
+def test_torch_tensor_03():
+    t = torch.rand((2, 3, 4))
+    print("shape:", t.shape)
+    print("tensor:\n", t)
+
+    t = t[:, -1, :]
+    print("\nshape:", t.shape)
+    print("tensor:\n", t)
+
+
+def test_torch_tensor_04():
+    t = torch.tensor(
+        [
+            [
+                [
+                    [0.2745, 0.6584, 0.2775, 0.8573],
+                    [0.8993, 0.0390, 0.9268, 0.7388],
+                    [0.7179, 0.7058, 0.9156, 0.4340],
+                ],
+                [
+                    [0.0772, 0.3565, 0.1479, 0.5331],
+                    [0.4066, 0.2318, 0.4545, 0.9737],
+                    [0.4606, 0.5159, 0.4220, 0.5786],
+                ],
+            ]
+        ]
+    )
+    print("shape:", t.shape)  # d=[1,2,3,4]
+
+    first_head = t[0, 0, :, :]
+    print("\nfirst head shape:", first_head.shape)  # d=[3,4]
+    first_res = first_head @ first_head.T
+    print("first head:\n", first_res)
+
+    second_head = t[0, 1, :, :]
+    print("\nsecond head shape:", second_head.shape)  # d=[3,4]
+    second_res = second_head @ second_head.T
+    print("second head:\n", second_res)
+
+    res = t @ t.transpose(2, 3)
+    print("\nresult shape:", res.shape)  # d=[1,2,3,3]
+    print("result:\n", res)
 
 
 def test_torch_calculate_01():
@@ -88,15 +130,20 @@ def test_torch_dot_mm_01():
 
 
 def test_torch_dot_mm_02():
-    # a,b 不同维度
+    # a,b 不同维度 -> [2,3] @ [3,2] = [2,2]
     a = torch.tensor([[1, 2, 3], [3, 4, 5]])
     b = torch.tensor([[1, 2], [3, 4], [5, 6]])
 
     # 点积运算
+    # formula 1:
     # 1*1 + 2*3 + 3*5 = 22
     # 1*2 + 2*4 + 3*6 = 28
     # 3*1 + 4*3 + 5*5 = 40
     # 3*2 + 4*4 + 5*6 = 52
+    #
+    # formula 2:
+    # 1*[1,2] + 2*[3,4] + 3*[5,6] = [22,28]
+    # 3*[1,2] + 4*[3,4] + 5*[5,6] = [40,52]
     c = a @ b
     print("dot")
     print("shape:", c.shape)
@@ -237,15 +284,17 @@ if __name__ == "__main__":
     # test_torch_device()
 
     # test_torch_tensor_01()
-    # test_torch_tensor_02()
+    test_torch_tensor_02()
+    # test_torch_tensor_03()
+    # test_torch_tensor_04()
 
     # test_torch_dot_mm_01()
-    test_torch_dot_mm_02()
+    # test_torch_dot_mm_02()
     # test_torch_calculate_01()
     # test_torch_calculate_02()
 
     # test_torch_transform()
-    # test_torch_view()
+    # test_torch_reshape()
 
     # test_torch_grad_01()
     # test_torch_grad_02()
