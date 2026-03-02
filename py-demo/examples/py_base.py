@@ -24,6 +24,7 @@ def test_dict_ops():
         "10": "ten",
     }
     # iterate in order
+    print("raw dict:")
     for item in d.items():
         print(item)
 
@@ -31,9 +32,12 @@ def test_dict_ops():
     k = next(iter(d))
     d.pop(k)
 
-    print("\nafter pop:")
-    for item in d.items():
-        print(item)
+    # update value
+    d.update({"10": "Ten", "8": "Eight"})
+
+    print("\nafter updated:")
+    for k, v in d.items():
+        print(f"{k}={v}")
 
 
 def test_cal_division():
@@ -174,6 +178,7 @@ def test_my_call_with_retry():
 if __name__ == "__main__":
     # test_var_ops()
     test_dict_ops()
+
     # test_cal_division()
 
     # test_class_with_typeddict()
