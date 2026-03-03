@@ -43,9 +43,20 @@ def test_torch_tensor_02():
 
 
 def test_torch_tensor_03():
+    print("random tensor:")
     t = torch.rand((2, 3, 4))
     print("shape:", t.shape)
     print("tensor:\n", t)
+
+    t = t[:, -1, :]
+    print("\nshape:", t.shape)
+    print("tensor:\n", t)
+
+    print("\nsepc tensor:")
+    t = torch.tensor(
+        [[[-1.5854, 0.9904], [-3.7235, 7.4548], [-2.2661, 6.6049], [-3.5983, 3.9902]]]
+    )
+    print("shape:", t.shape)
 
     t = t[:, -1, :]
     print("\nshape:", t.shape)
@@ -284,8 +295,8 @@ if __name__ == "__main__":
     # test_torch_device()
 
     # test_torch_tensor_01()
-    test_torch_tensor_02()
-    # test_torch_tensor_03()
+    # test_torch_tensor_02()
+    test_torch_tensor_03()
     # test_torch_tensor_04()
 
     # test_torch_dot_mm_01()

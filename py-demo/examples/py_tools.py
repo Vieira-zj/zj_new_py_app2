@@ -3,7 +3,29 @@ import os
 import shutil
 import tempfile
 from contextlib import contextmanager
-from functools import cache, lru_cache
+from functools import cache, lru_cache, partial
+
+# example: partial
+
+
+def test_tool_partial():
+    def power(base, exponent):
+        return base**exponent
+
+    print("wrapped power:")
+    square = partial(power, exponent=2)
+    cube = partial(power, exponent=3)
+
+    print("square:", square(5))
+    print("cube:", cube(3))
+
+    print("\nwrapped print:")
+    debug = partial(print, "[DEBUG]")
+    error = partial(print, "[ERROR]")
+
+    debug("connection established")
+    error("file not found")
+
 
 # example: cache
 
@@ -57,5 +79,6 @@ def test_context_manager():
 
 
 if __name__ == "__main__":
-    test_tool_cache()
+    test_tool_partial()
+    # test_tool_cache()
     # test_context_manager()
