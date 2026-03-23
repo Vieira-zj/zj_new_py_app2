@@ -168,10 +168,25 @@ def test_torch_dot_mm_02():
 
 
 def test_torch_transform():
+    inputs = torch.tensor(
+        [
+            [0.43, 0.15, 0.89],
+            [0.55, 0.87, 0.66],
+            [0.57, 0.85, 0.64],
+            [0.22, 0.58, 0.33],
+            [0.77, 0.25, 0.10],
+            [0.05, 0.80, 0.55],
+        ]
+    )
+    print("input shape:", inputs.shape)
+
+    batch = torch.stack((inputs, inputs), dim=0)
+    print("batch shape:", batch.shape, batch.shape[1])
+
     # 增加维度
     x = torch.randn(3, 4)
     x_unsq = x.unsqueeze(0)
-    print(f"unsqueeze:\n{x_unsq.shape}")
+    print(f"\nunsqueeze:\n{x_unsq.shape}")
 
     # 减少维度
     x_sq = x_unsq.squeeze(0)
@@ -179,7 +194,7 @@ def test_torch_transform():
 
     # 转置
     y = x.transpose(0, 1)
-    print(f"transpose:\n{y.shape}")
+    print(f"\ntranspose:\n{y.shape}")
 
 
 def test_torch_reshape():
@@ -296,7 +311,7 @@ if __name__ == "__main__":
 
     # test_torch_tensor_01()
     # test_torch_tensor_02()
-    test_torch_tensor_03()
+    # test_torch_tensor_03()
     # test_torch_tensor_04()
 
     # test_torch_dot_mm_01()
@@ -304,7 +319,7 @@ if __name__ == "__main__":
     # test_torch_calculate_01()
     # test_torch_calculate_02()
 
-    # test_torch_transform()
+    test_torch_transform()
     # test_torch_reshape()
 
     # test_torch_grad_01()
