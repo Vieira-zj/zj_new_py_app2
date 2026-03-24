@@ -1,12 +1,34 @@
 # -- coding: utf-8 --
 import dataclasses
 import random
+from collections import Counter
 from dataclasses import dataclass
 from typing import Callable, Final, List, Optional, TypedDict, Union
 
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 # example: base
+
+
+def test_cal_division():
+    float_res = 10 / 3
+    print(f"result: {float_res:.2f}")
+
+    int_res = 10 // 3  # 返回整数
+    print("result:", int_res)
+
+
+def test_str_padding():
+    s = "hello"
+    print(f"|{s.ljust(10)}|")
+    print(f"|{s.rjust(10)}|")
+
+    print("\nadjust fields:")
+    fields = ["ab", "xyz", "longword", "hello"]
+    max_len = max(len(field) for field in fields)
+    ljust_fields = [col.ljust(max_len) for col in fields]
+    for field in ljust_fields:
+        print(f"|{field}|")
 
 
 def test_var_ops():
@@ -40,12 +62,18 @@ def test_dict_ops():
         print(f"{k}={v}")
 
 
-def test_cal_division():
-    float_res = 10 / 3
-    print(f"result: {float_res:.2f}")
+def test_counter():
+    chars: list[str] = []
+    for c in "hello world, wowl":
+        if c.strip():
+            chars.append(c)
 
-    int_res = 10 // 3  # 返回整数
-    print("result:", int_res)
+    counter = Counter(chars)
+    for k, v in counter.items():
+        print(f"{k}:{v}")
+
+    k, v = counter.most_common(1)[0]
+    print(f"\nmost common: {k}:{v}")
 
 
 # example: typed dict
@@ -176,10 +204,12 @@ def test_my_call_with_retry():
 
 
 if __name__ == "__main__":
-    # test_var_ops()
-    test_dict_ops()
-
     # test_cal_division()
+    test_str_padding()
+
+    # test_var_ops()
+    # test_dict_ops()
+    # test_counter()
 
     # test_class_with_typeddict()
     # test_datacls_and_dict()
