@@ -1,5 +1,6 @@
 # -- coding: utf-8 --
 import dataclasses
+import json
 import random
 from collections import Counter
 from dataclasses import dataclass
@@ -86,12 +87,14 @@ def test_class_with_typeddict():
         department: str
         is_active: bool
 
-    emp: Employee = {
-        "name": "Bar",
-        "id": 1024,
-        "department": "Engineering",
-        "is_active": True,
-    }
+    # emp: Employee = {
+    #     "name": "Bar",
+    #     "id": 101,
+    #     "department": "Engineering",
+    #     "is_active": True,
+    # }
+
+    emp = Employee(name="Bar", id=101, department="Engineering", is_active=True)
 
     print(f"type: {type(emp)}")
     print(f"is dict: {isinstance(emp, dict)}")
@@ -101,6 +104,8 @@ def test_class_with_typeddict():
     print(f"id: {emp['id']}")
     print(f"department: {emp['department']}")
     print(f"active: {'Yes' if emp.get('is_active') else 'No'}")
+
+    print(f"\nemployee: {json.dumps(emp)}")
 
 
 # example: dataclass
@@ -205,13 +210,13 @@ def test_my_call_with_retry():
 
 if __name__ == "__main__":
     # test_cal_division()
-    test_str_padding()
+    # test_str_padding()
 
     # test_var_ops()
     # test_dict_ops()
     # test_counter()
 
-    # test_class_with_typeddict()
+    test_class_with_typeddict()
     # test_datacls_and_dict()
 
     # test_my_call_with_retry()
