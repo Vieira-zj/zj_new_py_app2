@@ -2,7 +2,8 @@
 
 import json
 import os
-from typing import Final, Optional, TypedDict
+import time
+from typing import Any, Final, Optional, TypedDict
 
 import requests
 from dotenv import load_dotenv
@@ -17,7 +18,7 @@ class Endpoint(TypedDict):
     path: str
 
 
-class GatewayConfig(TypedDict):
+class EndpointConfig(TypedDict):
     endpoint_id: int
     environments: list[str]
     gateway_config: str
@@ -26,16 +27,30 @@ class GatewayConfig(TypedDict):
     is_formily: bool
 
 
-class MtsBatchOp:
-    def __init__(self) -> None:
-        self.env: Final[str] = "test"
-        self.approver: Final[str] = "jin.zheng"
+class GatewayConfig(TypedDict):
+    type: str
+    spex: str
+    raw_request: bool
+    timeout_sec: int
+    serve_rule: dict
+    version: int
+    auth_type: str
+    login_required: bool
+    permissions: list[Any]
+    need_meta: list[str]
+    cookie_control: bool
 
-        self.pop_domain: str = os.getenv("POP_DOMAIN", "")
-        self.sp_host: str = os.getenv("SP_HOST", "")
-        self.sp_token: str = os.getenv("SP_TOKEN", "")
+
+class MtsBatchOp:
+    def __init__(self, env: str = "test", approver: str = "jin.zheng") -> None:
+        self.pop_domain: Final[str] = os.getenv("POP_DOMAIN", "")
+        self.sp_host: Final[str] = os.getenv("SP_HOST", "")
+        self.sp_token: Final[str] = os.getenv("SP_TOKEN", "")
         if not all((self.pop_domain, self.sp_host, self.sp_token)):
             raise ValueError("pop_domain, sp_host, sp_token is empty")
+
+        self.env: Final[str] = env
+        self.approver: Final[str] = approver
 
         self.session = requests.Session()
         self.session.headers.update(
@@ -53,8 +68,8 @@ class MtsBatchOp:
         if not keyword:
             return []
 
-        url = self.sp_host + "/v1/ecp_nonlive/get_endpoints_v2"
-        data = {
+        url: str = self.sp_host + "/v1/ecp_nonlive/get_endpoints_v2"
+        data: dict = {
             "domain": self.pop_domain,
             "need_config_statuses": True,
             "path": keyword,
@@ -67,7 +82,7 @@ class MtsBatchOp:
             endpoints.append(Endpoint(id=ep["id"], path=ep["endpoint"]))
         return endpoints
 
-    def get_endpoint_config(self, endpoint_id: int) -> dict:
+    def get_endpoint_gateway_config(self, endpoint_id: int) -> dict:
         if endpoint_id < 1:
             raise ValueError(f"invalid endpoint_id: {endpoint_id}")
 
@@ -76,9 +91,9 @@ class MtsBatchOp:
         resp_data = self.check_and_get_resp_data(resp)
 
         gateway_config = resp_data["gateway_config"]
-        print(f"get gateway config for endpoint [{endpoint_id}]: {gateway_config}")
-
+        # print(f"[debug] get gateway config for endpoint [{endpoint_id}]: {gateway_config}")
         gateway_config_obj = json.loads(gateway_config)
+
         if gateway_config_obj is None or len(gateway_config_obj["spex"]) == 0:
             raise ValueError(f"invalid gateway config: endpoint_id={endpoint_id}")
         return gateway_config_obj
@@ -90,21 +105,20 @@ class MtsBatchOp:
         raise KeyError(f"no endpoint found by path: {endpoint_path}")
 
     def update_enpoint_by_id(self, endpoint_id: int, **kwargs) -> None:
-        if not kwargs:
-            return None
+        gateway_config = self.get_endpoint_gateway_config(endpoint_id)
 
         # do update
-        endpoint_config = self.get_endpoint_config(endpoint_id)
-        for k, v in kwargs.items():
-            print(f"update gateway config [{k}]: {endpoint_config[k]}->{v}")
-            endpoint_config[k] = v
+        if kwargs:
+            for k, v in kwargs.items():
+                print(f"update gateway config [{k}]: {gateway_config[k]}->{v}")
+                gateway_config[k] = v
 
-        data = GatewayConfig(
+        data = EndpointConfig(
             endpoint_id=endpoint_id,
             environments=[self.env],
-            gateway_config=json.dumps(endpoint_config),
+            gateway_config=json.dumps(gateway_config),
             selected_approvers=[self.approver],
-            change_comment="update config",
+            change_comment="update gateway config",
             is_formily=False,
         )
 
@@ -115,21 +129,20 @@ class MtsBatchOp:
         print(
             f"update gateway config success: endpoint_id={endpoint_id}, response_data={resp_data}"
         )
-        return None
 
     def copy_endpoint(self, endpoint_path: str, to_env: str) -> None:
         if not to_env:
-            return None
+            raise ValueError("endpoint copy to_env is null")
 
         ep = self.get_first_endpoint(endpoint_path)
         if not ep or not ep.get("id"):
             raise KeyError(f"no endpoint found by path: {endpoint_path}")
 
-        endpoint_config = self.get_endpoint_config(ep.get("id"))
-        data = GatewayConfig(
+        gateway_config = self.get_endpoint_gateway_config(ep.get("id"))
+        data = EndpointConfig(
             endpoint_id=ep.get("id"),
             environments=[to_env],
-            gateway_config=json.dumps(endpoint_config),
+            gateway_config=json.dumps(gateway_config),
             selected_approvers=[self.approver],
             change_comment=f"copy config to {to_env}",
             is_formily=False,
@@ -141,7 +154,6 @@ class MtsBatchOp:
         print(
             f"copy gateway config success: endpoint_path={endpoint_path}, to_env={to_env} response_data={resp_data}"
         )
-        return None
 
     def create_endpoint(self, from_endpoint_id: int):
         print(f"to impl: create endpoint from {from_endpoint_id}")
@@ -151,12 +163,15 @@ class MtsBatchOp:
         resp_json: dict = resp.json()
         if resp_json["error"]:
             raise HTTPError(
-                f"http request failed: error={resp_json["error"]}, error_msg={resp_json["error_msg"]}"
+                f"request to mts failed: error_code={resp_json["error"]}, error_msg={resp_json["error_msg"]}"
             )
         return resp_json["data"]
 
 
-if __name__ == "__main__":
+# Main
+
+
+def main_test():
     op = MtsBatchOp()
 
     ep_path = "entity_product"
@@ -170,3 +185,49 @@ if __name__ == "__main__":
     # op.update_enpoint_by_id(44623, timeout_sec=10)
 
     # op.copy_endpoint(ep_path, "staging")
+
+
+def main_validate_endpoints():
+    op = MtsBatchOp(env="uat")
+
+    for ep_path in ["key_project_field/list_options", "key_project/search"]:
+        try:
+            ep = op.get_first_endpoint(ep_path)
+            if ep:
+                gateway_cfg = op.get_endpoint_gateway_config(ep["id"])
+                cfg = GatewayConfig(**gateway_cfg)
+                print(
+                    f"\nendpoint [{ep_path}] config: spex={cfg['spex']}, timeout={cfg['timeout_sec']}, auth={cfg['auth_type']}"
+                )
+                if not cfg["auth_type"]:
+                    print(f"endpoint auth_type [{ep_path}] is null")
+            time.sleep(0.5)
+        except HTTPError as e:
+            print(f"validate endpoint [{ep_path}] error: {e}")
+
+
+def main_update_endpoints():
+    op = MtsBatchOp(env="test")
+    for ep_path in ["key_project_field/list_options", "key_project/search"]:
+        try:
+            op.update_enpoint(ep_path)
+            time.sleep(0.5)
+        except HTTPError as e:
+            print(f"update endpoint [{ep_path}] error: {e}")
+
+
+def main_copy_endpoints():
+    op = MtsBatchOp(env="test")
+    for ep_path in ["key_project_field/list_options", "key_project/search"]:
+        try:
+            op.copy_endpoint(ep_path, to_env="staging")
+            time.sleep(0.5)
+        except HTTPError as e:
+            print(f"copy endpoint [{ep_path}] error: {e}")
+
+
+if __name__ == "__main__":
+    main_test()
+
+    # main_validate_endpoints()
+    # main_update_endpoints()
