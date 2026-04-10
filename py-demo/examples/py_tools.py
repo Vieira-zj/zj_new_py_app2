@@ -4,11 +4,12 @@ import shutil
 import tempfile
 from contextlib import contextmanager
 from functools import cache, lru_cache, partial
+from pathlib import Path
 
 # example: partial
 
 
-def test_tool_partial():
+def test_fntool_partial():
     def power(base, exponent):
         return base**exponent
 
@@ -30,7 +31,7 @@ def test_tool_partial():
 # example: cache
 
 
-def test_tool_cache():
+def test_fntool_cache():
     @cache
     def add1(x: int, y: int) -> int:
         print(f"calculating {x} + {y}")
@@ -78,7 +79,18 @@ def test_context_manager():
             print(f"error code: {obj.get('error', 1)}")
 
 
+# example: file path
+
+
+def test_ostool_path():
+    path = Path("/") / "tmp" / "test"
+    for file in path.glob("*.json"):
+        print(file.name)
+
+
 if __name__ == "__main__":
-    test_tool_partial()
-    # test_tool_cache()
+    # test_fntool_partial()
+    # test_fntool_cache()
     # test_context_manager()
+
+    test_ostool_path()

@@ -2,7 +2,7 @@
 import dataclasses
 import json
 import random
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from typing import Callable, Final, List, Optional, TypedDict, Union
 
@@ -61,6 +61,15 @@ def test_dict_ops():
     print("\nafter updated:")
     for k, v in d.items():
         print(f"{k}={v}")
+
+
+def test_default_dict():
+    counts = defaultdict(int)
+    for c in "hello world, wowl":
+        if c.strip():
+            counts[c] += 1
+    for k, v in counts.items():
+        print(f"{k}:{v}")
 
 
 def test_counter():
@@ -214,9 +223,11 @@ if __name__ == "__main__":
 
     # test_var_ops()
     # test_dict_ops()
+
+    test_default_dict()
     # test_counter()
 
-    test_class_with_typeddict()
+    # test_class_with_typeddict()
     # test_datacls_and_dict()
 
     # test_my_call_with_retry()
