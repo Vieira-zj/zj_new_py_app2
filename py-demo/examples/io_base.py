@@ -1,6 +1,7 @@
 import os
 import shutil
 import zipfile
+from pathlib import Path
 
 tmp_dir = "/tmp/test"
 
@@ -40,6 +41,33 @@ def test_io_delete():
     # delete dir
     # ignore_errors 忽略权限错误
     shutil.rmtree(dst_dir, ignore_errors=True)
+
+
+# example: filepath
+
+
+def test_filepath_rw():
+    f = Path("/tmp/test/output.json")
+    if not f.exists():
+        f.write_text('{"message":"hello","code":0}', encoding="utf-8")
+
+    content = f.read_text(encoding="utf-8")
+    print(f"read [{f}]:\n{content}")
+
+
+def test_filepath_append():
+    fpath = Path("/tmp/test/output.json")
+    assert fpath.exists(), f"file [{fpath}] is not exist for append text"
+
+    with fpath.open(mode="a", encoding="utf-8") as f:
+        n = f.write('\n{"message":"value error","code":400}')
+        print(f"write [{n}] charaters")
+
+
+def test_filepath_glob():
+    path = Path("/") / "tmp" / "test"
+    for file in path.glob("*.json"):
+        print(file.name)
 
 
 # example: zip and upzip
@@ -85,4 +113,6 @@ def test_unzip_files():
 
 
 if __name__ == "__main__":
-    pass
+    # test_filepath_rw()
+    test_filepath_append()
+    # test_filepath_glob()
