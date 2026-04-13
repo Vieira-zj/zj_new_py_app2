@@ -97,15 +97,42 @@ def test_torch_tensor_04():
     print("result:\n", res)
 
 
+def test_torch_reduction():
+    a = torch.tensor([[1, 2], [3, 4]], dtype=torch.float64)
+    print("max:", torch.max(a))  # 最大值
+    print("max index:", torch.argmax(a))  # 最大值索引
+
+    print("\nsum:", torch.sum(a))
+    print("cumsum at dim=0:", torch.cumsum(a, dim=0))  # 累加
+    print("cumprod at dim=1:", torch.cumprod(a, dim=1))  # 累积
+
+    print("\nmean:", a.mean())  # 均值
+    print("median:", a.median())  # 中值
+    print("variance:", a.var())  # 方差
+    print("standard deviation:", a.std())  # 标准差
+
+
 def test_torch_calculate_01():
-    x = torch.tensor([-1.1, 0.5, 0.501, 0.99])
-    y = torch.round(x)
-    print(f"round:\n{y}")
+    a = torch.tensor([-1.1, 0.5, 0.501, 0.99])
+    print("round:", torch.round(a))
+
+    # 指数
+    b = torch.tensor([1.0, 2.0, 3.0], dtype=torch.bfloat16)
+    print("\nexp", torch.exp(b))  # base=2.718
+    print("exp2", torch.exp2(b))  # base=2
+
+    # 对数
+    c = torch.tensor([7.0, 8.0], dtype=torch.float64)
+    print("\nnatural log:", torch.log(c))  # base=2.718
+    print("binary log:", torch.log2(c))  # base=2
+
+    d = torch.tensor([[1.0, 4.0], [7.0, 9.0]], dtype=torch.float64)
+    print("\nsqrt:", torch.sqrt(d))
 
     x = torch.tensor([[1, 2], [6, 4]])
-    idx = torch.argmax(x)
     y = x.view(4)
     print(f"\nflat tensor:\n{y}")
+    idx = torch.argmax(x)
     print(f"argmax={idx}, max={y[idx].data}")
 
 
@@ -314,12 +341,14 @@ if __name__ == "__main__":
     # test_torch_tensor_03()
     # test_torch_tensor_04()
 
-    # test_torch_dot_mm_01()
-    # test_torch_dot_mm_02()
-    # test_torch_calculate_01()
+    # test_torch_reduction()
+    test_torch_calculate_01()
     # test_torch_calculate_02()
 
-    test_torch_transform()
+    # test_torch_dot_mm_01()
+    # test_torch_dot_mm_02()
+
+    # test_torch_transform()
     # test_torch_reshape()
 
     # test_torch_grad_01()
