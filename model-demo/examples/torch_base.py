@@ -137,12 +137,15 @@ def test_torch_calculate_01():
 
 
 def test_torch_calculate_02():
+    a = torch.tensor([1.0337e-05, 5.6776e-05, 4.7559e-06], dtype=torch.float64)
+    print("log:", torch.log(a))
+
     x = torch.tensor([1, 2])
     y = torch.tensor([3, 4])
 
     # 逐元素相乘
     z = x * y
-    print(f"x * y: {z}")
+    print(f"\nx * y: {z}")
 
     # 点积运算
     z = x @ y
@@ -342,8 +345,8 @@ if __name__ == "__main__":
     # test_torch_tensor_04()
 
     # test_torch_reduction()
-    test_torch_calculate_01()
-    # test_torch_calculate_02()
+    # test_torch_calculate_01()
+    test_torch_calculate_02()
 
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()
