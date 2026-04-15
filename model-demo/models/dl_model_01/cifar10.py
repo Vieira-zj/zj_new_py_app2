@@ -1,6 +1,5 @@
 import torch
-import torch.optim as optim
-from torch import Tensor, nn
+from torch import Tensor, nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
@@ -55,6 +54,8 @@ class CnnNet(nn.Module):
 
 def model_train():
     model = CnnNet()
+    model.train()
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
@@ -62,9 +63,10 @@ def model_train():
         running_loss = 0.0
         for i, data in enumerate(trainloader, 1):
             inputs, labels = data  # 获取输入数据
-            optimizer.zero_grad()  # 梯度清零
             outputs = model(inputs)  # 前向传播
-            loss = criterion(outputs, labels)  # 计算损失
+            loss: Tensor = criterion(outputs, labels)  # 计算损失
+
+            optimizer.zero_grad()  # 梯度清零
             loss.backward()  # 反向传播
             optimizer.step()  # 更新参数
 
@@ -77,19 +79,22 @@ def model_train():
     print("finished training")
 
 
-def model_test():
+def model_evaluate():
     model = CnnNet()
     model.load_state_dict(torch.load("./cifar_net.pth"))  # 加载模型参数
 
+    model.eval()
+
     correct = 0
     total = 0
-    with torch.no_grad():
-        for data in testloader:
-            images, labels = data
+
+    for data in testloader:
+        images, labels = data
+        with torch.no_grad():
             outputs: Tensor = model(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
 
     print("accuracy of the network on test images: %d %%" % (100 * correct / total))
 

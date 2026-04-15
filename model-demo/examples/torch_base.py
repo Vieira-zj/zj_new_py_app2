@@ -12,10 +12,12 @@ def test_torch_device():
 def test_torch_tensor_01():
     print(f"tensor default type: {torch.tensor(1).dtype}")
 
-    data = [51, 51, 586, 240, 6262, 1179, 5046, 799, 2507, 3158, 1335]
-    data_tensor = torch.tensor(data)
-    x = data_tensor[:-1]
-    y = data_tensor[1:]
+    s = [51, 51, 586, 240, 6262, 1179, 5046, 799, 2507, 3158, 1335]
+    data = torch.tensor(s)
+    print("\nnumel:", data.numel())  # total number of elements for input tensor
+
+    x = data[:-1]
+    y = data[1:]
     print(f"input len: {len(x)}, target len: {len(y)}")
 
     t = torch.tensor([1.0, 2.0])
@@ -339,14 +341,14 @@ def get_my_attn_scores(inputs: Tensor) -> Tensor:
 if __name__ == "__main__":
     # test_torch_device()
 
-    # test_torch_tensor_01()
+    test_torch_tensor_01()
     # test_torch_tensor_02()
     # test_torch_tensor_03()
     # test_torch_tensor_04()
 
     # test_torch_reduction()
     # test_torch_calculate_01()
-    test_torch_calculate_02()
+    # test_torch_calculate_02()
 
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()

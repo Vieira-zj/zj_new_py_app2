@@ -45,17 +45,21 @@ class Model(nn.Module):
 
 def model_train():
     model = Model()
+    model.train()
+
     criterion = nn.CrossEntropyLoss()
     # 第一个参数是初始化参数值, 第二个参数是学习率
     optimizer = torch.optim.SGD(model.parameters(), 0.8)
 
     for index, data in enumerate(train_loader):
         input_data, target = data
-        optimizer.zero_grad()
         y_predict = model(input_data)
         loss = criterion(y_predict, target)
+
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
         if index % 100 == 0:
             torch.save(model.state_dict(), "./model/model.pkl")
             torch.save(optimizer.state_dict(), "./model/optimizer.pkl")
@@ -74,11 +78,13 @@ def load_model() -> Model:
     return model
 
 
-def model_test():
+def model_evaluate():
     model = load_model()
+    model.eval()
 
     correct = 0
     total = 0
+
     with torch.no_grad():
         for data in test_loader:
             input_data, target = data
@@ -94,8 +100,9 @@ def model_test():
         print("accuracy: %.2f" % (correct / total))
 
 
-def main_test():
+def main_predict():
     model = load_model()
+    model.eval()
 
     image = Image.open("./test/test_one.png")
     image = image.resize((28, 28))  # 裁剪尺寸为 28*28

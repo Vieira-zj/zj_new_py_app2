@@ -6,7 +6,13 @@ from rank_bm25 import BM25Okapi
 # example: python
 
 
-def test_py_typing():
+def test_py_typings():
+    def get_numbers() -> tuple[int, int]:
+        return 1, 3
+
+    x, y = get_numbers()
+    print(f"x={x}, y={y}")
+
     # union
     def get_number_v1() -> Union[int, None]:
         r = random.randint(1, 10)
@@ -100,9 +106,9 @@ def test_bm25_similarity():
 
 
 if __name__ == "__main__":
-    # test_py_typing()
+    test_py_typings()
 
-    test_get_sublist()
+    # test_get_sublist()
     # test_iter_enumerate()
     # test_iter_next()
 

@@ -7,7 +7,7 @@ from torch import Tensor, nn, optim
 from torch.distributions import MultivariateNormal
 from torch.utils.data import DataLoader, Dataset
 
-# torch: dataset
+# dataset
 
 
 def mock_samples() -> Tuple[Tensor, Tensor]:
@@ -57,7 +57,12 @@ class CustomDataset(Dataset):
 def test_torch_dataset():
     data, labels = mock_samples()
     dataset = CustomDataset(data, labels)
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=4)
+    dataloader = DataLoader(
+        dataset=dataset,
+        batch_size=32,
+        shuffle=True,
+        num_workers=4,
+    )
 
     # 训练循环中使用
     for batch_data, batch_labels in dataloader:
@@ -65,24 +70,44 @@ def test_torch_dataset():
         # to impl training ...
 
 
-# model: logistic
+# linear model
 
 
 def my_linear(x, w, b):
-    """实现 y = x*A.t + b 线性模型."""
-    return torch.mm(x, w.t()) + b
+    return x @ w.T + b
 
 
 def my_sigmoid(x):
-    """实现 sigmoid 函数."""
     x = 1 / (1 + torch.exp(-x))
     return x
 
 
 def my_loss(x, y):
-    """实现损失函数."""
     loss = -torch.mean(torch.log(x) * y + torch.log(1 - x) * (1 - y))
     return loss
+
+
+def test_linear_model():
+    torch.manual_seed(123)
+    x = torch.tensor([1.0, 2.0])
+    model = torch.nn.Linear(2, 1)
+    output = model(x)
+    print("output:", output)
+
+    for p in model.parameters():
+        print("\nnumber of parameter:", p.numel())
+        print("parameter:", p)
+
+
+def test_my_linear():
+    x = torch.tensor([1.0, 2.0])
+    w = torch.tensor([[-0.2883, 0.0234]], requires_grad=True)
+    b = torch.tensor([-0.3512], requires_grad=True)
+    output = my_linear(x, w, b)
+    print("output:", output)
+
+
+# logistic regression
 
 
 def test_logistic_process():
@@ -112,9 +137,9 @@ def test_logistic_process():
 
 
 class LogisticRegression(nn.Module):
-    def __init__(self, D_in: int):
+    def __init__(self, d_in: int):
         super().__init__()
-        self.linear = nn.Linear(D_in, 1)
+        self.linear = nn.Linear(d_in, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: Any) -> Any:
@@ -128,14 +153,15 @@ def test_logistic_model():
     lr_model = LogisticRegression(2)
     loss = nn.BCELoss()
 
-    result = loss(lr_model(x), y)
-    print("loss:", result)
+    l: Tensor = loss(lr_model(x), y)
+    print("loss:", l.item())
 
     # 模型训练
     optimizer = optim.SGD(lr_model.parameters(), lr=0.03)
 
     iters = 10
     batch_size = 10
+
     for _ in range(iters):
         for i in range(int(len(x) / batch_size)):
             inputs = x[i * batch_size : (i + 1) * batch_size]
@@ -143,6 +169,7 @@ def test_logistic_model():
             # 前向传播
             outputs = lr_model(inputs)
             l = loss(outputs, target)
+
             # 反向传播和优化
             optimizer.zero_grad()
             l.backward()
@@ -175,15 +202,17 @@ def test_neuralnet_model():
 
     # 准备模型, 损失函数和优化器
     model = NeuralNet(input_size=10, hidden_size=20, output_size=1)
+
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # 训练模式 (启用 dropout, 批归一化使用批统计量)
     model.train()
-    for epoch in range(100):
+
+    for epoch in range(10):
         # 前向传播
         outputs = model(train_data)
-        loss = criterion(outputs, targets)
+        loss: Tensor = criterion(outputs, targets)
 
         # 反向传播
         optimizer.zero_grad()  # 清除旧梯度
@@ -196,11 +225,15 @@ def test_neuralnet_model():
     # 评估/推理模式 (禁用 dropout, 批归一化使用运行统计量)
     test_data = torch.rand(3, 3)
     model.eval()
+
     with torch.no_grad():  # 禁用梯度计算, 节省内存
         predictions = model(test_data)
-        loss = criterion(predictions, targets)
-        print("final loss:", loss.item())
+    loss = criterion(predictions, targets)
+    print("final loss:", loss.item())
 
 
 if __name__ == "__main__":
-    pass
+    # test_torch_dataset()
+
+    # test_linear_model()
+    test_my_linear()
