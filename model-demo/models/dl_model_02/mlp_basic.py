@@ -28,7 +28,7 @@ class MlpBasicModel(torch.nn.Module):
         return x
 
 
-def main_model_test():
+def model_test():
     torch.manual_seed(123)
 
     x = torch.rand(1, 28, 28)
@@ -42,4 +42,4 @@ def main_model_test():
 
 
 if __name__ == "__main__":
-    main_model_test()
+    model_test()

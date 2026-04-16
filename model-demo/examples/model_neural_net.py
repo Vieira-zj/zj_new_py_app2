@@ -134,7 +134,7 @@ def get_test_dataloader() -> DataLoader:
 # training loop
 
 
-def test_train_loop():
+def model_train_loop():
     torch.manual_seed(123)
     model = NeuralNetwork(num_inputs=2, num_outputs=2)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.5)
@@ -167,7 +167,7 @@ def test_train_loop():
 # model evaluate
 
 
-def test_evaluate_model():
+def model_evaluate():
     model = NeuralNetwork(num_inputs=2, num_outputs=2)
 
     fpath = "/tmp/test/model.pth"
@@ -206,5 +206,5 @@ if __name__ == "__main__":
     # test_neural_network()
     # test_toy_data_loader()
 
-    # test_train_loop()
-    # test_evaluate_model()
+    # model_train_loop()
+    # model_evaluate()
