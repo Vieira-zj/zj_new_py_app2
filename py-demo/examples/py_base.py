@@ -68,22 +68,35 @@ def test_default_dict():
     for c in "hello world, wowl":
         if c.strip():
             counts[c] += 1
+
     for k, v in counts.items():
         print(f"{k}:{v}")
 
 
 def test_counter():
     chars: list[str] = []
-    for c in "hello world, wowl":
+    for c in "hello world":
         if c.strip():
             chars.append(c)
 
     counter = Counter(chars)
+    counter.update(" ,wowl")
     for k, v in counter.items():
         print(f"{k}:{v}")
 
     k, v = counter.most_common(1)[0]
     print(f"\nmost common: {k}:{v}")
+
+
+def test_catch_json_err():
+    s = '{"data":{"message":"ok"}'
+    try:
+        d = json.loads(s)
+        print("load:", d)
+    except json.JSONDecodeError as e:
+        print(f"json decode error: {e}")
+    except Exception as e:
+        print(f"unexpected error: {e}")
 
 
 # example: typed dict
@@ -224,8 +237,9 @@ if __name__ == "__main__":
     # test_var_ops()
     # test_dict_ops()
 
-    test_default_dict()
+    # test_default_dict()
     # test_counter()
+    test_catch_json_err()
 
     # test_class_with_typeddict()
     # test_datacls_and_dict()
