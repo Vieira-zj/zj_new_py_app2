@@ -199,7 +199,7 @@ def test_torch_dot_mm_02():
     print(f"value:\n{c}")
 
 
-def test_torch_transform():
+def test_torch_transform_01():
     inputs = torch.tensor(
         [
             [0.43, 0.15, 0.89],
@@ -210,26 +210,40 @@ def test_torch_transform():
             [0.05, 0.80, 0.55],
         ]
     )
-    print("input shape:", inputs.shape)
+    print("inputs.shape:", inputs.shape)
 
     batch = torch.stack((inputs, inputs), dim=0)
-    print("batch shape:", batch.shape, batch.shape[1])
+    print(f"batch.shape={batch.shape}, batch.shape[1]={batch.shape[1]}")
+
+    # flat
+    x = torch.rand((2, 3, 4))
+    print("\ninput shape:", x.shape)
+
+    a = torch.flatten(x, start_dim=1)
+    print("flat:", a.shape)
+
+    b = x.view(-1, 3 * 4)
+    print("flat by view:", b.shape)
+
+
+def test_torch_transform_02():
+    x = torch.randn(3, 4)
+    print("x shape:", x.shape)
 
     # 增加维度
-    x = torch.randn(3, 4)
     x_unsq = x.unsqueeze(0)
-    print(f"\nunsqueeze:\n{x_unsq.shape}")
+    print(f"\nunsqueeze.shape={x_unsq.shape}, tensor:\n{x_unsq}")
 
     # 减少维度
     x_sq = x_unsq.squeeze(0)
-    print(f"squeeze:\n{x_sq.shape}")
+    print(f"\nsqueeze.shape={x_sq.shape}, tensor:\n{x_sq}")
 
     # 转置
-    y = x.transpose(0, 1)
-    print(f"\ntranspose:\n{y.shape}")
+    y = x_unsq.transpose(1, 2)
+    print("\ntranspose shape:", y.shape)
 
 
-def test_torch_reshape():
+def test_torch_transform_03():
     x = torch.randn(2, 3, 4)
     print("is_contiguous:", x.is_contiguous())
     print(x)
@@ -251,8 +265,8 @@ def test_torch_reshape():
 def test_torch_grad_01():
     x = torch.tensor(2.0, requires_grad=True)
     y = x**2 + 2 * x + 2
-    # 计算梯度
-    y.backward()
+
+    y.backward()  # 计算梯度
     print(f"在 x=2 处的导数: {x.grad}")
 
 
@@ -341,7 +355,7 @@ def get_my_attn_scores(inputs: Tensor) -> Tensor:
 if __name__ == "__main__":
     # test_torch_device()
 
-    test_torch_tensor_01()
+    # test_torch_tensor_01()
     # test_torch_tensor_02()
     # test_torch_tensor_03()
     # test_torch_tensor_04()
@@ -353,8 +367,9 @@ if __name__ == "__main__":
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()
 
-    # test_torch_transform()
-    # test_torch_reshape()
+    # test_torch_transform_01()
+    test_torch_transform_02()
+    # test_torch_transform_03()
 
     # test_torch_grad_01()
     # test_torch_grad_02()

@@ -34,6 +34,7 @@ class CnnNet(nn.Module):
         self.conv1 = nn.Conv2d(3, 6, 5)  # 输入通道数 3, 输出通道数 6, 卷积核大小 5
         self.pool = nn.MaxPool2d(2, 2)  # 最大池化, 核大小 2, 步长 2
         self.conv2 = nn.Conv2d(6, 16, 5)  # 输入通道数 6, 输出通道数 16, 卷积核大小 5
+
         self.linear1 = nn.Linear(
             16 * 5 * 5, 120
         )  # 全连接层, 输入维度 16*5*5, 输出维度 120
@@ -45,6 +46,7 @@ class CnnNet(nn.Module):
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))  # 第一层 卷积+激活函数+池化
         x = self.pool(torch.relu(self.conv2(x)))  # 第二层 卷积+激活函数+池化
+
         x = x.view(-1, 16 * 5 * 5)  # 将特征图展平
         x = torch.relu(self.linear1(x))  # 第一层 全连接+激活函数
         x = torch.relu(self.linear2(x))  # 第二层 全连接+激活函数

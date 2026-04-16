@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, Dataset
 
 
 def test_auto_gradient():
+    # logistic regression classifier
     y = torch.tensor([1.0])
     x1 = torch.tensor([1.1])
     w1 = torch.tensor([2.2], requires_grad=True)
