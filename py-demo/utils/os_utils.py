@@ -41,6 +41,9 @@ def run_shell_cmd(command: str) -> int:
         return p.returncode
 
 
+# Utils Test
+
+
 def test_shell_exec():
     cmd = "ls -l /tmp/test"
     output = shell_exec(cmd)
