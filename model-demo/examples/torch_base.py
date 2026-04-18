@@ -114,7 +114,7 @@ def test_torch_reduction():
     print("standard deviation:", a.std())  # 标准差
 
 
-def test_torch_calculate_01():
+def test_torch_calc_01():
     a = torch.tensor([-1.1, 0.5, 0.501, 0.99])
     print("round:", torch.round(a))
 
@@ -138,7 +138,7 @@ def test_torch_calculate_01():
     print(f"argmax={idx}, max={y[idx].data}")
 
 
-def test_torch_calculate_02():
+def test_torch_calc_02():
     a = torch.tensor([1.0337e-05, 5.6776e-05, 4.7559e-06], dtype=torch.float64)
     print("log:", torch.log(a))
 
@@ -199,7 +199,15 @@ def test_torch_dot_mm_02():
     print(f"value:\n{c}")
 
 
-def test_torch_transform_01():
+def test_torch_stack():
+    # all tensor for stack must be the same length
+    t1 = torch.Tensor([0.43, 0.15, 0.89])
+    t2 = torch.Tensor([0.55, 0.87, 0.66])
+    t3 = torch.Tensor([0.57, 0.85, 0.64])
+    t = [t1, t2, t3]
+    batch1 = torch.stack(t)
+    print("batch.shape:", batch1.shape)
+
     inputs = torch.tensor(
         [
             [0.43, 0.15, 0.89],
@@ -210,23 +218,26 @@ def test_torch_transform_01():
             [0.05, 0.80, 0.55],
         ]
     )
-    print("inputs.shape:", inputs.shape)
+    print("\ninputs.shape:", inputs.shape)
 
-    batch = torch.stack((inputs, inputs), dim=0)
-    print(f"batch.shape={batch.shape}, batch.shape[1]={batch.shape[1]}")
+    batch2 = torch.stack((inputs, inputs), dim=0)
+    print(f"batch.shape={batch2.shape}, batch.shape[1]={batch2.shape[1]}")
 
-    # flat
+
+def test_torch_flat():
     x = torch.rand((2, 3, 4))
-    print("\ninput shape:", x.shape)
+    print("input shape:", x.shape)
 
     a = torch.flatten(x, start_dim=1)
-    print("flat:", a.shape)
+    print("\nflat:", a.shape)
 
     b = x.view(-1, 3 * 4)
-    print("flat by view:", b.shape)
+    print("\nflat by view:", b.shape)
+    c = x.view(-1, 2 * 3 * 4)
+    print("flat by view:", c.shape)
 
 
-def test_torch_transform_02():
+def test_torch_transform_01():
     x = torch.randn(3, 4)
     print("x shape:", x.shape)
 
@@ -243,7 +254,7 @@ def test_torch_transform_02():
     print("\ntranspose shape:", y.shape)
 
 
-def test_torch_transform_03():
+def test_torch_transform_02():
     x = torch.randn(2, 3, 4)
     print("is_contiguous:", x.is_contiguous())
     print(x)
@@ -361,15 +372,17 @@ if __name__ == "__main__":
     # test_torch_tensor_04()
 
     # test_torch_reduction()
-    # test_torch_calculate_01()
-    # test_torch_calculate_02()
+    # test_torch_calc_01()
+    # test_torch_calc_02()
 
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()
 
+    test_torch_stack()
+    # test_torch_flat()
+
     # test_torch_transform_01()
-    test_torch_transform_02()
-    # test_torch_transform_03()
+    # test_torch_transform_02()
 
     # test_torch_grad_01()
     # test_torch_grad_02()
