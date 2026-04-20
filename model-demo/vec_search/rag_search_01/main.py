@@ -3,8 +3,9 @@ import logging
 import time
 from typing import Any, Dict, List, NotRequired, Optional, TypedDict
 
-import data_utils
+import rag_utils
 import torch
+import yaml
 from sentence_transformers import SentenceTransformer
 from torch import Tensor
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
@@ -22,9 +23,9 @@ class RagSystem:
 
     def __init__(
         self,
-        milvus_uri: str = "./milvus_demo.db",
+        milvus_uri: str = "/tmp/test/milvus_demo.db",
         collection_name: str = "documents",
-        embedding_model: str = data_utils.small_embedding_model,
+        embedding_model: str = rag_utils.small_embedding_model,
         reranker_model: Optional[str] = "BAAI/bge-reranker-base",
     ):
         self.logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class RagSystem:
         }
 
         # 连接 Milvus
-        self.client = data_utils.get_milvus_client(milvus_uri)
+        self.client = rag_utils.get_milvus_client(milvus_uri)
         self.collection_name = collection_name
 
         # 初始化 Embedding 模型
@@ -186,7 +187,7 @@ class RagSystem:
 
     def build_context(self, query: str, retrieved_docs: List[Dict[str, Any]]) -> str:
         """
-        构建上下文: 位置优化, 突破U型陷阱的关键步骤
+        构建上下文: 位置优化, 突破 U 型陷阱的关键步骤
 
         策略:
         - 最相关文档 -> 开头 (利用 Primacy Bias)
@@ -266,7 +267,30 @@ class RagSystem:
         }
 
 
-def test_rag_system():
+def init_logger():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler("rag_system.log"), logging.StreamHandler()],
+    )
+
+
+def init_config():
+    with open("./config.yaml", mode="r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+        if isinstance(config, dict):
+            milvus_uri = config["milvus"]["uri"]
+            collection_name = config["milvus"]["collection_name"]
+            print(
+                f"load config: milvus_uri={milvus_uri}, collection_name={collection_name}"
+            )
+
+
+def test_rag_query():
+    init_logger()
+    init_config()
+
     rag = RagSystem()
     result = rag.query("What is Milvus?")
     print(
