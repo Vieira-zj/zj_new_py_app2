@@ -157,6 +157,9 @@ class RagSearch:
         return results
 
 
+# Test
+
+
 def test_rag_index():
     rag = RagSearch(paths=[""])
     rag.index()
