@@ -37,6 +37,13 @@ def test_var_ops():
     print("mode:", main_mode)
 
 
+def test_set_ops():
+    s1: set[str] = set(["a", "b", "c"])
+    s2: set[str] = set(["d", "b", "c"])
+    print("diff:", s1 - s2)
+    print("merged:", s1.intersection(s2))
+
+
 def test_dict_ops():
     d = {
         "5": "five",
@@ -235,11 +242,12 @@ if __name__ == "__main__":
     # test_str_padding()
 
     # test_var_ops()
+    test_set_ops()
     # test_dict_ops()
 
     # test_default_dict()
     # test_counter()
-    test_catch_json_err()
+    # test_catch_json_err()
 
     # test_class_with_typeddict()
     # test_datacls_and_dict()

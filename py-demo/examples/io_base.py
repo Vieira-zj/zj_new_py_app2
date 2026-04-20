@@ -46,6 +46,18 @@ def test_io_delete():
 # example: filepath
 
 
+def test_filepath_format():
+    path = Path("~/Download/tmps")
+    print("path:", str(path))
+    path = path.expanduser()
+    print("expanduser:", str(path))
+
+    path = Path("./utils")
+    print("\npath:", str(path))
+    path = path.resolve()
+    print("absolute:", str(path))
+
+
 def test_filepath_rw():
     f = Path("/tmp/test/output.json")
     if not f.exists():
@@ -113,6 +125,7 @@ def test_unzip_files():
 
 
 if __name__ == "__main__":
+    test_filepath_format()
     # test_filepath_rw()
-    test_filepath_append()
+    # test_filepath_append()
     # test_filepath_glob()

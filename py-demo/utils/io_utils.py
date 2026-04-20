@@ -1,16 +1,19 @@
 import csv
+import os
 import re
 from pathlib import Path
 from typing import Generator
 
 
-def read_lines_lazy(f_path: str) -> Generator[str]:
+def read_lines_lazy(f_path: str) -> Generator[str, None, None]:
     with open(f_path, mode="r", encoding="utf-8") as f:
         for line in f:
             yield line.strip()
 
 
-def read_chunk_csv(f_path: str, chunk_size: int = 1000) -> Generator[list]:
+def read_chunk_csv(
+    f_path: str, chunk_size: int = 1000
+) -> Generator[list[str], None, None]:
     with open(f_path, mode="r", encoding="utf-8") as f:
         chunk = []
         reader = csv.DictReader(f)
@@ -35,6 +38,30 @@ def batch_rename_files(dir_path: str, pattern: str, replacement: str) -> None:
                 print(f"rename: {old_name} -> {new_name}")
 
 
+def scan_files(root_path: str, extension: str) -> list[str]:
+    """Recursively scan root_path for files with spec extension."""
+    if not extension:
+        raise ValueError("extension is required")
+
+    root = Path(root_path).expanduser().resolve()
+    if root.is_file() and has_extension(root, extension):
+        return [str(root)]
+
+    results: list[str] = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for fname in filenames:
+            fpath = Path(dirpath) / fname
+            if has_extension(fpath, extension):
+                results.append(str(fpath))
+
+    return results
+
+
+def has_extension(path: Path, extension: str) -> bool:
+    return path.suffix.lower() == extension
+
+
 # Utils Test
 
 
@@ -51,5 +78,13 @@ def test_batch_rename_files():
     batch_rename_files("/tmp/test/py_project", r"^test_", "pytest_")
 
 
+def test_scan_files():
+    path = "~/Downloads/tmps"
+    results = scan_files(path, extension=".py")
+    print(f"all python files in [{path}]:")
+    for p in results:
+        print(f"{p}")
+
+
 if __name__ == "__main__":
-    pass
+    test_scan_files()
