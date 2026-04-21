@@ -5,6 +5,18 @@ import tempfile
 from contextlib import contextmanager
 from functools import cache, lru_cache, partial
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def test_py_env():
+    print("python_root:", os.getenv("PYTHONROOT", "na"))
+    print("python_path:", os.getenv("PYTHONPATH", "na"))
+    print(f"run_env: {os.getenv("ENV", "dev")}")
+    print(f"pop_domain: {os.getenv("POP_DOMAIN", "na")}")
+
+
 # example: partial
 
 
@@ -79,6 +91,8 @@ def test_context_manager():
 
 
 if __name__ == "__main__":
-    test_fntool_partial()
+    test_py_env()
+
+    # test_fntool_partial()
     # test_fntool_cache()
     # test_context_manager()

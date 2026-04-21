@@ -46,9 +46,9 @@ def chat():
 
 
 def main():
-    print("python root:", os.getenv("PYROOT", "unknown"))
-    print("python project home:", os.getenv("PYHOME", "unknown"))
-    print(f"run env: {os.getenv("ENV", "unknown")}")
+    print("python root:", os.getenv("PYTHONROOT", "na"))
+    print("project path:", os.getenv("PYTHONPATH", "na"))
+    print(f"run env: {os.getenv("ENV", "dev")}")
 
 
 # run cli:

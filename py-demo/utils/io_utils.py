@@ -78,13 +78,5 @@ def test_batch_rename_files():
     batch_rename_files("/tmp/test/py_project", r"^test_", "pytest_")
 
 
-def test_scan_files():
-    path = "~/Downloads/tmps"
-    results = scan_files(path, extension=".py")
-    print(f"all python files in [{path}]:")
-    for p in results:
-        print(f"{p}")
-
-
 if __name__ == "__main__":
-    test_scan_files()
+    pass
