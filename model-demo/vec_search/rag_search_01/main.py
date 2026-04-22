@@ -1,14 +1,31 @@
 import hashlib
 import logging
 import time
-from typing import Any, Dict, List, NotRequired, Optional, TypedDict
+from typing import Any, NotRequired, Optional, TypedDict
 
-import rag_utils
 import torch
 import yaml
+from chunker import chunk_document, insert_embeddings
 from sentence_transformers import SentenceTransformer
+from store import create_milvus_collection, get_milvus_client, small_embedding_model
 from torch import Tensor
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+
+def init_logger():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler("rag_system.log"), logging.StreamHandler()],
+    )
+
+
+class QueryResult(TypedDict):
+    query: str
+    context: str
+    answer: str
+    retrieved_docs: NotRequired[list[Any]]
+    reranked_docs: NotRequired[list[Any]]
 
 
 class Metrics(TypedDict):
@@ -24,8 +41,8 @@ class RagSystem:
     def __init__(
         self,
         milvus_uri: str = "/tmp/test/milvus_demo.db",
-        collection_name: str = "documents",
-        embedding_model: str = rag_utils.small_embedding_model,
+        coll_name: str = "documents",
+        embedding_model: str = small_embedding_model,
         reranker_model: Optional[str] = "BAAI/bge-reranker-base",
     ):
         self.logger = logging.getLogger(__name__)
@@ -38,8 +55,8 @@ class RagSystem:
         }
 
         # 连接 Milvus
-        self.client = rag_utils.get_milvus_client(milvus_uri)
-        self.collection_name = collection_name
+        self.client = get_milvus_client(milvus_uri)
+        self.collection_name = coll_name
 
         # 初始化 Embedding 模型
         self.encoder = SentenceTransformer(embedding_model)
@@ -61,7 +78,7 @@ class RagSystem:
 
     def query(
         self, user_query: str, retrieve_top_k: int = 100, rerank_top_k: int = 10
-    ) -> Dict[str, Any]:
+    ) -> QueryResult:
         """查询流程: 检索 -> 重排 -> 位置优化 -> 生成"""
         self.metrics["total_queries"] += 1
         query_start = time.time()
@@ -84,8 +101,8 @@ class RagSystem:
         self.logger.info("\n步骤 2: 重排 (Top-%d)...", rerank_top_k)
         rerank_start = time.time()
         doc_texts = [doc["text"] for doc in retrieved_docs]
-        self.metrics["total_rerank_time"] += time.time() - rerank_start
         reranked_texts = self.rerank(user_query, doc_texts, top_k=rerank_top_k)
+        self.metrics["total_rerank_time"] += time.time() - rerank_start
 
         # 更新文档列表 (只保留重排后的文档)
         reranked_docs = [doc for doc in retrieved_docs if doc["text"] in reranked_texts]
@@ -111,7 +128,7 @@ class RagSystem:
             "answer": "[提示] 未配置 LLM, 仅返回上下文.\n\n" + context,
         }
 
-    def retrieve(self, query: str, top_k: int = 100) -> List[Dict[str, Any]]:
+    def retrieve(self, query: str, top_k: int = 100) -> list[dict[str, Any]]:
         cache_key = self._get_cache_key(query, top_k)
         if cache_key in self.cache:
             self.logger.info("✓ 使用缓存结果")
@@ -119,21 +136,20 @@ class RagSystem:
 
         # 1. 编码查询
         query_vector = self.encoder.encode(query, normalize_embeddings=True)
-        query_vector = query_vector.tolist()
 
         # 2. 在 Milvus 中搜索
         results = self.client.search(
             collection_name=self.collection_name,
-            data=[query_vector],
+            data=[query_vector.tolist()],
             limit=top_k,
             search_params={"metric_type": "L2", "params": {}},
             output_fields=["text", "doc_id", "title"],
         )
 
         # 3. 格式化结果
-        retrieved_docs: List[dict] = []
+        retrieved_docs: list[dict[str, Any]] = []
         for hit in results[0]:
-            entity: Dict[str, str] = hit.get("entity", {})
+            entity: dict[str, str] = hit.get("entity", {})
             retrieved_docs.append(
                 {
                     "id": hit.get("id", ""),
@@ -147,7 +163,7 @@ class RagSystem:
         self.cache[cache_key] = retrieved_docs
         return retrieved_docs
 
-    def rerank(self, query: str, documents: List[str], top_k: int = 10) -> List[str]:
+    def rerank(self, query: str, documents: list[str], top_k: int = 10) -> list[str]:
         """
         重排: 使用 BGE-Reranker 对检索结果进行精排
 
@@ -185,9 +201,9 @@ class RagSystem:
 
         return reranked_docs
 
-    def build_context(self, query: str, retrieved_docs: List[Dict[str, Any]]) -> str:
+    def build_context(self, query: str, retrieved_docs: list[dict[str, Any]]) -> str:
         """
-        构建上下文: 位置优化, 突破 U 型陷阱的关键步骤
+        构建上下文: 位置优化, 突破 U 型陷阱关键步骤
 
         策略:
         - 最相关文档 -> 开头 (利用 Primacy Bias)
@@ -232,7 +248,7 @@ class RagSystem:
 
         return "\n".join(context_parts)
 
-    def batch_retrieve(self, queries: List[str], batch_size: int = 32):
+    def batch_retrieve(self, queries: list[str], batch_size: int = 32) -> list[Any]:
         # 批量编码
         query_vectors = self.encoder.encode(queries, normalize_embeddings=True)
 
@@ -254,7 +270,7 @@ class RagSystem:
 
         return all_results
 
-    def get_metrics(self):
+    def get_metrics(self) -> dict:
         total = self.metrics["total_queries"]
         if total == 0:
             return {}
@@ -267,15 +283,10 @@ class RagSystem:
         }
 
 
-def init_logger():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[logging.FileHandler("rag_system.log"), logging.StreamHandler()],
-    )
+# Test
 
 
-def init_config():
+def test_init_config():
     with open("./config.yaml", mode="r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
@@ -283,23 +294,33 @@ def init_config():
             milvus_uri = config["milvus"]["uri"]
             collection_name = config["milvus"]["collection_name"]
             print(
-                f"load config: milvus_uri={milvus_uri}, collection_name={collection_name}"
+                f"loaded config: milvus_uri={milvus_uri}, collection_name={collection_name}"
             )
 
 
-# Test
+def test_data_prepare():
+    documents = [
+        "Milvus is an open-source vector database...",
+        "RAG combines information retrieval with language models...",
+    ]
+
+    collection_name = "documents"
+    create_milvus_collection(collection_name)
+
+    chunks = []
+    for doc in documents:
+        chunks.append(chunk_document(doc))
+    insert_embeddings(chunks, collection_name)
+    print("✓ 数据准备完成, 共 %d 个文档", len(documents))
 
 
-def test_rag_query():
+def test_rag_search():
     init_logger()
-    init_config()
 
     rag = RagSystem()
     result = rag.query("What is Milvus?")
-    print(
-        f"rag results:\n{result["context"]}",
-    )
+    print(f"rag results:\n{result["context"]}")
 
 
 if __name__ == "__main__":
-    pass
+    test_init_config()

@@ -1,4 +1,9 @@
 import torch
+from dotenv import load_dotenv
+
+from vec_search import pkg_help as rag_pkg_help
+
+load_dotenv()
 
 
 def get_device() -> str:
@@ -38,4 +43,5 @@ def main():
 
 
 if __name__ == "__main__":
+    rag_pkg_help()
     main()
