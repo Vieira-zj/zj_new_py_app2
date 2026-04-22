@@ -32,6 +32,8 @@ def test_embedding_st_model_02():
 
     query_embedding = model.encode(query)
     doc_embeddings = model.encode(docs)
+    print("query embedding shape:", query_embedding.shape)
+    print("doc embeddings shape:", doc_embeddings.shape)
 
     scores = util.cos_sim(query_embedding, doc_embeddings)
     print("sim scores:", scores)
@@ -98,7 +100,6 @@ if __name__ == "__main__":
     # test_torch_dropout()
 
     # test_embedding_st_model_01()
-    # test_embedding_st_model_02()
+    test_embedding_st_model_02()
 
     # test_tf_attention()
-    pass

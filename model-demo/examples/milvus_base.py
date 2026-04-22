@@ -2,6 +2,7 @@ from typing import Any, Final
 
 import torch
 from pymilvus import DataType, MilvusClient
+from sentence_transformers import SentenceTransformer
 
 collection_name: Final[str] = "collection_hello"
 
@@ -23,7 +24,8 @@ def create_milvus_collection():
     schema.add_field(
         field_name="id", datatype=DataType.INT64, is_primary=True, auto_id=False
     )
-    schema.add_field(field_name="embedding", datatype=DataType.FLOAT_VECTOR, dim=128)
+    schema.add_field(field_name="embedding", datatype=DataType.FLOAT_VECTOR, dim=384)
+    schema.add_field(field_name="content", datatype=DataType.VARCHAR, max_length=10240)
 
     index_params = client.prepare_index_params()
     index_params.add_index(
@@ -56,21 +58,21 @@ def check_milvus_collection():
         print("collection info:", info)
 
 
-def insert_vector():
+def insert_rand_vector():
     num_vectors = 10
-    dim = 128
+    dim = 384
 
-    ids = list(range(num_vectors))
     t = torch.rand([num_vectors, dim])
     print("data shape:", t.shape)
 
     vectors = t.tolist()
     records: list[dict[str, Any]] = []
-    for rid, vec in zip(ids, vectors):
+    for rid, vec in enumerate(vectors):
         records.append(
             {
                 "id": rid,
                 "embedding": vec,
+                "content": f"rand text at {rid}",
             }
         )
 
@@ -78,9 +80,78 @@ def insert_vector():
     client.insert(collection_name, data=records)
 
 
-def delete_vector():
+def insert_embedding_vector():
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    docs = ["猫是一种动物", "狗是人类的朋友", "今天天气不错"]
+    doc_embeddings = model.encode(docs)
+    print("doc embeddings shape:", doc_embeddings.shape)
+
+    records = [
+        {"id": get_new_row_id() + rid, "embedding": embedding, "content": docs[rid]}
+        for rid, embedding in enumerate(doc_embeddings.tolist())
+    ]
+
     client = get_milvus_client()
-    client.delete(collection_name=collection_name, ids=[0, 1, 2])
+    client.insert(collection_name, data=records)
+    print(f"inserted total {len(records)}")
+
+
+def get_new_row_id() -> int:
+    client = get_milvus_client()
+    stats = client.get_collection_stats(collection_name)
+    return stats.get("row_count", 0)
+
+
+def test_query_by_ids():
+    client = get_milvus_client()
+    if not client.has_collection(collection_name):
+        raise ValueError(f"collection not exist: {collection_name}")
+
+    results = client.query(
+        collection_name=collection_name,
+        ids=[10, 11],
+        output_fields=["content"],
+    )
+    for hit in results:
+        print("hit content:", hit["content"])
+
+
+def test_dense_query():
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    query = "宠物"
+    query_embedding = model.encode(query)
+    print("query embedding shape:", query_embedding.shape)
+
+    client = get_milvus_client()
+    if not client.has_collection(collection_name):
+        raise ValueError(f"collection not exist: {collection_name}")
+
+    results = client.search(
+        collection_name=collection_name,
+        data=[query_embedding.tolist()],
+        anns_field="embedding",
+        search_params={
+            "metric_type": "L2",  # IP / COSINE
+            "params": {},
+        },
+        limit=2,
+        output_fields=["id", "content"],
+    )
+
+    print(f"\nquery [{query}]:")
+    for hits in results:
+        for hit in hits:
+            print(f'id={hit["id"]}, content={hit["content"]}')
+
+
+def delete_vector_by_ids():
+    client = get_milvus_client()
+    client.delete(
+        collection_name=collection_name,
+        ids=[0, 1, 2],
+    )
 
 
 if __name__ == "__main__":
@@ -88,7 +159,12 @@ if __name__ == "__main__":
     # create_milvus_collection()
     # drop_milvus_collection()
 
-    # insert_vector()
-    # delete_vector()
+    # insert_rand_vector()
+    # insert_embedding_vector()
 
     check_milvus_collection()
+
+    # test_query_by_ids()
+    test_dense_query()
+
+    # delete_vector_by_ids()
