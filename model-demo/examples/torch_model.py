@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer, util
 from torch import Tensor
@@ -21,7 +22,10 @@ def test_embedding_st_model_01():
         "我喜欢机器学习",
     ]
     embeddings = st_model.encode(sentences, normalize_embeddings=True)
-    print("embedding shape:", embeddings)
+    print("embedding shape:", embeddings.shape)
+
+    sums = np.sum(embeddings, axis=1)
+    print("sum embeddings:", sums)  # 按行求和
 
 
 def test_embedding_st_model_02():
@@ -35,8 +39,10 @@ def test_embedding_st_model_02():
     print("query embedding shape:", query_embedding.shape)
     print("doc embeddings shape:", doc_embeddings.shape)
 
-    scores = util.cos_sim(query_embedding, doc_embeddings)
-    print("sim scores:", scores)
+    cos_scores = util.cos_sim(query_embedding, doc_embeddings)
+    dot_scores = util.dot_score(query_embedding, doc_embeddings)
+    # 当向量已归一化时, 内积 = 余弦相似度
+    print(f"cos_sim_scores={cos_scores}, dot_scores={dot_scores}")
 
 
 # example: attention
