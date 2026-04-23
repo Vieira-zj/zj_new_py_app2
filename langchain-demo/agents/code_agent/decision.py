@@ -1,8 +1,5 @@
-from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from tools import get_api_key
-
-load_dotenv()
 
 
 class DecisionModule:

@@ -2,9 +2,6 @@ import os
 from typing import Any, Dict, Optional
 
 from agentrun.sandbox import BrowserSandbox, Sandbox, TemplateType
-from dotenv import load_dotenv
-
-load_dotenv()
 
 _global_manager: Optional[SandboxManager] = None
 

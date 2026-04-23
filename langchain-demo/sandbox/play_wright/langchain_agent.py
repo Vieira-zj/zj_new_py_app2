@@ -1,15 +1,12 @@
 import os
 from typing import Literal, Optional
 
-from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain_openai import ChatOpenAI
 from playwright.sync_api import sync_playwright
 from pydantic import BaseModel, Field
 from sandbox_manager import get_global_manager
-
-load_dotenv()
 
 # ============ LangChain Tools ============
 

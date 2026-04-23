@@ -10,8 +10,8 @@ load_dotenv()
 
 def main():
     print("python version:", sys.version)
-    print("python root:", os.getenv("PYROOT", "unknown"))
-    print("python project home:", os.getenv("PYHOME", "unknown"))
+    print("python root:", os.getenv("PYROOT", "na"))
+    print("python project home:", os.getenv("PYHOME", "na"))
 
     print()
     pkg_help()

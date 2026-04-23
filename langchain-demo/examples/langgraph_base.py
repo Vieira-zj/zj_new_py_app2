@@ -1,10 +1,47 @@
-from typing import List, Optional, TypedDict
+from typing import Optional, TypedDict
 
-from langgraph.graph import END, StateGraph
+from langgraph.graph import END, START, StateGraph
+
+# Demo 01
+
+
+class TextState(TypedDict):
+    text: str
+
+
+def test_langgraph_01():
+    def to_uppercase(state: TextState) -> TextState:
+        print(f"[to_uppercase] Initial state: {state}")
+        return TextState(text=state["text"].upper())
+
+    def to_lowercase(state: TextState) -> TextState:
+        print(f"[to_lowercase] Received state: {state}")
+        return TextState(text=state["text"].lower())
+
+    def build_graph():
+        builder = StateGraph(TextState)
+
+        # add nodes
+        builder.add_node("to_uppercase", to_uppercase)
+        builder.add_node("to_lowercase", to_lowercase)
+
+        # add edges
+        builder.add_edge(START, "to_uppercase")
+        builder.add_edge("to_uppercase", "to_lowercase")
+        builder.add_edge("to_lowercase", END)
+
+        return builder.compile()
+
+    graph = build_graph()
+    final_state = graph.invoke(TextState(text="Hello"))
+    print("final state:", final_state)
+
+
+# Demo 02
 
 
 class AgentState(TypedDict):
-    messages: List[str]
+    messages: list[str]
     user_intent: Optional[str]
     next_step: Optional[str]
 
@@ -31,7 +68,7 @@ def router(state):
     return "assistant"
 
 
-def agent_main():
+def test_langgraph_02():
     workflow = StateGraph(AgentState)
     workflow.add_node("intent_analysis", intent_analysis_node)
     workflow.add_node("assistant_reply", assistant_reply_node)
@@ -55,4 +92,4 @@ def agent_main():
 
 
 if __name__ == "__main__":
-    agent_main()
+    test_langgraph_01()

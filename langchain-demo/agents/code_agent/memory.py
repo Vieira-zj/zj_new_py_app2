@@ -1,11 +1,8 @@
 import os
 
-from dotenv import load_dotenv
 from langchain_classic.memory import ConversationBufferMemory
 from langchain_classic.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
-
-load_dotenv()
 
 
 def get_api_key() -> str:
