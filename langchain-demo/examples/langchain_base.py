@@ -21,7 +21,7 @@ def langchain_help():
     print("langchain version:", langchain.__version__)
 
 
-def test_langchain_01():
+def test_langchain_pipeline():
     prompt = ChatPromptTemplate.from_messages(
         [
             SystemMessage("你是乐于助人的中文助手"),
@@ -36,17 +36,19 @@ def test_langchain_01():
 
 @tool
 def get_weather(loc: str) -> str:
+    """mock get weather api."""
     result = {"loc": loc, "weather": "cloud"}
     return json.dumps(result)
 
 
 @tool
 def write_to_markdown(content: str) -> str:
+    """mock write content to markdown file."""
     print(f"mock write to md file: content_len={len(content)}")
     return "saved success"
 
 
-def test_langchain_agent_01():
+def test_langchain_agent():
     sys_prompt = (
         "你是一个智能助手, 可以自己根据用户的问题来调用响应的工具帮助用户解决问题"
     )
@@ -120,7 +122,7 @@ def test_langchain_middleware_02():
     print(result["messages"])
 
 
-# Fake Test
+# Fake Tests
 
 
 def test_fake_chatmodel_01():
@@ -152,6 +154,7 @@ def test_fake_chatmodel_02():
 
 
 if __name__ == "__main__":
-    langchain_help()
+    # langchain_help()
 
     # test_fake_chatmodel_01()
+    test_fake_chatmodel_02()

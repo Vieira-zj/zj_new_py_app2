@@ -1,2 +1,2 @@
 def pkg_help():
-    print("this is a web automation package.")
+    print("the web ui automation package.")
