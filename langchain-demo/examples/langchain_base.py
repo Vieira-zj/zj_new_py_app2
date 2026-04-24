@@ -21,7 +21,10 @@ def langchain_help():
     print("langchain version:", langchain.__version__)
 
 
-def test_langchain_pipeline():
+# LangChain
+
+
+def test_langchain_expr():
     prompt = ChatPromptTemplate.from_messages(
         [
             SystemMessage("你是乐于助人的中文助手"),
@@ -154,7 +157,7 @@ def test_fake_chatmodel_02():
 
 
 if __name__ == "__main__":
-    # langchain_help()
+    langchain_help()
 
     # test_fake_chatmodel_01()
-    test_fake_chatmodel_02()
+    # test_fake_chatmodel_02()
