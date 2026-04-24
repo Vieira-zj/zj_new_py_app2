@@ -594,7 +594,7 @@ requires-dist = [
     { name = "rank-bm25", specifier = ">=0.2.2" },
     { name = "sentence-transformers", specifier = ">=5.2.2" },
     { name = "setuptools", specifier = "==80.8.0" },
-    { name = "torch", specifier = "==2.2.2" },
+    { name = "torch", specifier = ">=2.2.2" },
     { name = "torchvision", specifier = ">=0.17.2" },
     { name = "transformers", specifier = "<5.0.0" },
 ]

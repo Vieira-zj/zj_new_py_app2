@@ -1013,10 +1013,10 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "agentrun-sdk", extras = ["playwright", "server"], specifier = ">=0.0.8" },
-    { name = "langchain", specifier = ">=0.1.0" },
-    { name = "langchain-community", specifier = ">=0.0.20" },
+    { name = "langchain", specifier = ">=1.2.3" },
+    { name = "langchain-community", specifier = ">=0.4.1" },
     { name = "langchain-ollama", specifier = ">=1.1.0" },
-    { name = "langchain-openai", specifier = ">=0.0.5" },
+    { name = "langchain-openai", specifier = ">=1.1.7" },
     { name = "langgraph", specifier = ">=1.0.6" },
     { name = "mss", specifier = ">=10.1.0" },
     { name = "playwright", specifier = ">=1.40.0" },
