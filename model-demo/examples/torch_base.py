@@ -1,5 +1,4 @@
 import torch
-from torch import Tensor, nn
 
 # example: torch
 
@@ -237,6 +236,13 @@ def test_torch_flat():
     print("flat by view:", c.shape)
 
 
+def test_torch_softmax():
+    t = torch.Tensor([[1, 2, 7], [1.1, 2.4, 6.5]])
+    y = torch.softmax(t, dim=-1)
+    print("softmax:", y)
+    print("sum:", torch.sum(y, dim=-1))
+
+
 def test_torch_transform_01():
     x = torch.randn(3, 4)
     print("x shape:", x.shape)
@@ -314,8 +320,9 @@ if __name__ == "__main__":
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()
 
-    test_torch_stack()
+    # test_torch_stack()
     # test_torch_flat()
+    test_torch_softmax()
 
     # test_torch_transform_01()
     # test_torch_transform_02()

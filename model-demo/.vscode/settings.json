@@ -19,7 +19,8 @@
   },
   "isort.args": ["--profile", "black"],
   "pylint.args": [
-    "--disable=E0401,E0601,W0123,W0603,W0718,W0719,C0114,C0115,C0116,C0103,C0209,C0301,C0415,no-name-in-module"
+    "--disable=no-name-in-module",
+    "--disable=E0601,W0123,W0603,W0718,W0719,C0114,C0115,C0116,C0103,C0209,C0301"
   ],
   "pylint.interpreter": ["${workspaceFolder}/.venv/bin/python3.12"]
   // "python.linting.pylintArgs": ["--generate-members"] // for pytest and allure
