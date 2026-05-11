@@ -107,7 +107,7 @@ def test_my_linear():
     print("output:", output)
 
 
-# logistic regression
+# logistic regression model
 
 
 def test_logistic_process():
@@ -183,7 +183,7 @@ def test_logistic_model():
         print("final loss:", l.item())
 
 
-# model: neural net
+# neural net model
 
 
 class NeuralNet(nn.Module):
@@ -232,8 +232,32 @@ def test_neuralnet_model():
     print("final loss:", loss.item())
 
 
+# linear vs. embedding
+
+
+def test_linear_and_embedding():
+    torch.manual_seed(123)
+
+    idx = torch.tensor([2, 3, 1])
+    num_idx = int(max(idx) + 1)
+    out_dim = 5
+    print(f"num_idx={num_idx}, out_dim={out_dim}")
+
+    embedding = torch.nn.Embedding(num_idx, out_dim)
+    print("\nembedding output:\n", embedding(idx))
+
+    onehot = torch.nn.functional.one_hot(idx)  # pylint: disable=not-callable
+    print("\none hot:\n", onehot)
+
+    linear = torch.nn.Linear(num_idx, out_dim, bias=False)
+    linear.weight = torch.nn.Parameter(embedding.weight.T)  # reset weight
+    print("linear output:\n", linear(onehot.float()))
+
+
 if __name__ == "__main__":
     # test_torch_dataset()
 
     # test_linear_model()
-    test_my_linear()
+    # test_my_linear()
+
+    test_linear_and_embedding()
