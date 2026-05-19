@@ -98,8 +98,8 @@ def test_torch_tensor_04():
     print("result:\n", res)
 
 
-def test_torch_reduction():
-    a = torch.tensor([[1, 2], [3, 4]], dtype=torch.float64)
+def test_torch_aggregation():
+    a = torch.tensor([[1, 2], [3, 4]], dtype=torch.float16)
     print("max:", torch.max(a))  # 最大值
     print("max index:", torch.argmax(a))  # 最大值索引
 
@@ -151,6 +151,27 @@ def test_torch_calc_02():
     # 点积运算
     z = x @ y
     print(f"x @ y: {z}")  # 1*3 + 2*4 = 11
+
+
+def test_math_std():
+    t = torch.tensor([2, 4, 4, 4, 5, 5, 7, 9], dtype=torch.bfloat16)
+    tmp = t.mean()
+    print("mean:", tmp.item())
+    tmp = t - tmp
+    print("t - mean:", tmp)
+    tmp = tmp**2
+    print("(t - mean)^2:", tmp)
+    result = tmp.sum() / (len(t) - 1)  # 总体方差除以 n, 样本方差除以 n-1
+    print("variance:", result.item())  # 方差
+    print("standard deviation:", torch.sqrt(result).item())  # 标准差
+
+    # 总体 方差和标准差
+    print("\nvariance:", t.var(unbiased=False).item())  # 方差
+    print("standard deviation:", t.std(unbiased=False).item())  # 标准差
+
+    # 样本 方差和标准差
+    print("\n(sample) variance:", t.var(unbiased=True).item())  # 方差
+    print("(sample) standard deviation:", t.std(unbiased=True).item())  # 标准差
 
 
 def test_torch_dot_mm_01():
@@ -313,16 +334,18 @@ if __name__ == "__main__":
     # test_torch_tensor_03()
     # test_torch_tensor_04()
 
-    # test_torch_reduction()
+    # test_torch_aggregation()
     # test_torch_calc_01()
     # test_torch_calc_02()
+
+    test_math_std()
 
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()
 
     # test_torch_stack()
     # test_torch_flat()
-    test_torch_softmax()
+    # test_torch_softmax()
 
     # test_torch_transform_01()
     # test_torch_transform_02()
