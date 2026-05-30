@@ -6,6 +6,8 @@ import sys
 
 from dotenv import load_dotenv
 
+from utils import base
+
 load_dotenv()
 
 
@@ -46,6 +48,7 @@ def chat():
 
 
 def main():
+    base.hello_world()
     print("python root:", os.getenv("PYTHONROOT", "na"))
     print("project path:", os.getenv("PYTHONPATH", "na"))
     print(f"run env: {os.getenv("ENV", "dev")}")

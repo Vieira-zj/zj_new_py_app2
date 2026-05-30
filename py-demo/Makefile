@@ -12,7 +12,7 @@ init-env:
 	uv sync --frozen
 
 run-main:
-	uv run main.py
+	uv run --env-file .env main.py
 
 run-tests:
 # 	uv run pytest -v tests/

@@ -1,6 +1,10 @@
 from typing import Any
 
 
+def hello_world():
+    print("Hello, World!")
+
+
 class FlexibleDict(dict):
     def __getattr__(self, key: str) -> Any:
         return self.get(key)

@@ -1,13 +1,13 @@
 {
   "python.envFile": "${workspaceFolder}/.env",
-  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3.12",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
   "python.autoComplete.extraPaths": [
-    "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+    "${workspaceFolder}/.venv/lib/python3.14/site-packages"
   ],
   "python.languageServer": "Pylance",
 
   "python.analysis.extraPaths": [
-    "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+    "${workspaceFolder}/.venv/lib/python3.14/site-packages"
   ],
   "python.analysis.typeCheckingMode": "standard",
   "python.analysis.indexing": true,
@@ -25,8 +25,12 @@
     "--disable=no-name-in-module",
     "--disable=E0601,W0123,W0603,W0621,W0718,W0719,C0114,C0115,C0116,C0103,C0209,C0301"
   ],
-  "pylint.interpreter": ["${workspaceFolder}/.venv/bin/python3.12"],
+  "pylint.interpreter": ["${workspaceFolder}/.venv/bin/python"],
   // "python.linting.pylintArgs": ["--generate-members"] // for pytest and allure
+
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["uitests"],
 
   "terminal.integrated.env.osx": {
     "PYTHONPATH": "${workspaceFolder}",

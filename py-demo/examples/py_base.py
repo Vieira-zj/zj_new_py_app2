@@ -11,6 +11,12 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 # example: base
 
 
+def test_import_lib():
+    from utils import base
+
+    base.hello_world()
+
+
 def test_cal_division():
     float_res = 10 / 3
     print(f"result: {float_res:.2f}")
@@ -238,11 +244,13 @@ def test_my_call_with_retry():
 
 
 if __name__ == "__main__":
+    test_import_lib()
+
     # test_cal_division()
     # test_str_padding()
 
     # test_var_ops()
-    test_set_ops()
+    # test_set_ops()
     # test_dict_ops()
 
     # test_default_dict()
