@@ -1,4 +1,4 @@
-from utils.logger import init_logger
+from utils.logger import get_logger
 
 
 def pkg_help():

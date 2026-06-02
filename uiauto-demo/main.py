@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-from utils import init_logger
+from utils import get_logger
 
 load_dotenv()
 
@@ -10,7 +10,7 @@ load_dotenv()
 
 
 def main():
-    logger = init_logger()
+    logger = get_logger()
     logger.info("demo: ui automation")
 
 

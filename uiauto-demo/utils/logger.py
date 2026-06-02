@@ -4,7 +4,7 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 
 
-def init_logger(
+def get_logger(
     name: str = "app", level: int = logging.INFO, log_file: str = ""
 ) -> logging.Logger:
     logger = logging.getLogger(name)
@@ -38,6 +38,6 @@ def init_logger(
 
 
 if __name__ == "__main__":
-    logger = init_logger(__name__)
+    logger = get_logger(__name__)
     logger.info("info message for testing")
     logger.warning("warnings")

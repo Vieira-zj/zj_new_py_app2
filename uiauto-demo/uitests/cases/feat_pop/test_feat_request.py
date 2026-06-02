@@ -1,18 +1,17 @@
+import logging
 import time
 
-import conftest
+from uitests.cases.feat_pop import fixture
 
-from utils import init_logger
-
-logger = init_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class TestFeatureRequest:
     @classmethod
     def setup_class(cls):
         logger.info("before class: init browser context")
-        cls.base_url = conftest.base_url_of_feat_request
-        cls.pw, cls.context = conftest.create_browser_context()
+        cls.base_url = fixture.base_url_of_feat_request
+        cls.pw, cls.context = fixture.create_browser_context()
 
     @classmethod
     def teardown_class(cls):
@@ -27,7 +26,7 @@ class TestFeatureRequest:
         page = self.context.new_page()
         page.goto(
             f"{self.base_url}/view-request?issue_key={request_id}",
-            timeout=conftest.wait_page_timeout,
+            timeout=fixture.wait_page_timeout,
         )
 
         # verify page title
@@ -44,11 +43,11 @@ class TestFeatureRequest:
 
         # open page
         page = self.context.new_page()
-        page.goto(f"{self.base_url}/requests-list", timeout=conftest.wait_page_timeout)
+        page.goto(f"{self.base_url}/requests-list", timeout=fixture.wait_page_timeout)
 
         # verify page title
         title = page.wait_for_selector(
-            'span[data-test-id="title"]', timeout=conftest.wait_ui_element_timeout
+            'span[data-test-id="title"]', timeout=fixture.wait_ui_element_timeout
         )
         assert title, "page title is not found"
         logger.info("page title: %s", title.text_content())
