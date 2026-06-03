@@ -1,32 +1,36 @@
 import logging
 import time
 
-from uitests.cases.feat_pop import fixture
+import pytest
+
+from uitests.cases.feat_pop import base, conftest
 
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.usefixtures("uiauto_session_setup")
 class TestFeatureRequest:
     @classmethod
     def setup_class(cls):
-        logger.info("before class: init browser context")
-        cls.base_url = fixture.base_url_of_feat_request
-        cls.pw, cls.context = fixture.create_browser_context()
+        logger.info("before class")
+        cls.base_url = base.base_url_of_feat_request
+        cls.pw = conftest.PW_APP
+        cls.context = base.new_browser_context(cls.pw)
 
     @classmethod
     def teardown_class(cls):
-        logger.info("after class: wait and close browser")
-        time.sleep(5)
+        logger.info("after class")
+        time.sleep(3)
         cls.context.close()
-        cls.pw.stop()
 
+    @pytest.mark.ui
     def test_view_request(self):
         request_id: str = "SPCPMTEST-103671"
 
         page = self.context.new_page()
         page.goto(
             f"{self.base_url}/view-request?issue_key={request_id}",
-            timeout=fixture.wait_page_timeout,
+            timeout=base.wait_page_timeout,
         )
 
         # verify page title
@@ -38,16 +42,19 @@ class TestFeatureRequest:
 
         # TODOs: verify detail
 
+        page.screenshot(path="/tmp/test/request_view.png")
+
+    @pytest.mark.ui
     def test_search_request(self):
         request_id = "SPCPMTEST-103671"
 
         # open page
         page = self.context.new_page()
-        page.goto(f"{self.base_url}/requests-list", timeout=fixture.wait_page_timeout)
+        page.goto(f"{self.base_url}/requests-list", timeout=base.wait_page_timeout)
 
         # verify page title
         title = page.wait_for_selector(
-            'span[data-test-id="title"]', timeout=fixture.wait_ui_element_timeout
+            'span[data-test-id="title"]', timeout=base.wait_ui_element_timeout
         )
         assert title, "page title is not found"
         logger.info("page title: %s", title.text_content())
@@ -77,6 +84,8 @@ class TestFeatureRequest:
 
         got_request_id = table_row.locator("td").nth(0).inner_text()
         assert request_id == got_request_id, "search request id is not matched"
+
+        page.screenshot(path="/tmp/test/request_search.png", full_page=True)
 
 
 if __name__ == "__main__":

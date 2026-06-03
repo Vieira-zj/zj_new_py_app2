@@ -1,7 +1,8 @@
 import os
 from typing import Final
+from venv import logger
 
-from playwright.sync_api import BrowserContext, Playwright, sync_playwright
+from playwright.sync_api import BrowserContext, Playwright
 
 # Env
 
@@ -37,12 +38,13 @@ auth_cookies: list = [
 # Helper
 
 
-def create_browser_context() -> tuple[Playwright, BrowserContext]:
-    pw = sync_playwright().start()
+def new_browser_context(pw: Playwright) -> BrowserContext:
+    # logger.info("chromium.executable_path: %s", pw.chromium.executable_path)
     browser = pw.chromium.launch(
         headless=False,
         args=["--start-maximized"],
+        executable_path=os.getenv("CHROMIUM_PATH"),
     )
     context = browser.new_context()
     context.add_cookies(auth_cookies)
-    return pw, context
+    return context
