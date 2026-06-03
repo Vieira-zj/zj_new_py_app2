@@ -3,7 +3,8 @@ import time
 
 import pytest
 
-from uitests.cases.feat_pop import base, conftest
+from tools import new_browser_context, scroll_to_element
+from uitests.cases.feat_pop import conftest
 
 logger = logging.getLogger(__name__)
 
@@ -13,9 +14,9 @@ class TestFeatureRequest:
     @classmethod
     def setup_class(cls):
         logger.info("before class")
-        cls.base_url = base.base_url_of_feat_request
-        cls.pw = conftest.PW_APP
-        cls.context = base.new_browser_context(cls.pw)
+        cls.base_url = conftest.base_url_of_request
+        cls.context = new_browser_context(conftest.PW_APP)
+        cls.context.add_cookies(conftest.auth_cookies)
 
     @classmethod
     def teardown_class(cls):
@@ -30,31 +31,36 @@ class TestFeatureRequest:
         page = self.context.new_page()
         page.goto(
             f"{self.base_url}/view-request?issue_key={request_id}",
-            timeout=base.wait_page_timeout,
+            timeout=conftest.wait_page_timeout,
         )
 
         # verify page title
         title = page.locator("div.CwTEbLVARGQ-")
         title_text = title.text_content()
-        assert title_text, "page title is empty"
+        assert title_text, "page title is not found"
         assert request_id in title_text, "incorrect page title text"
         logger.info("page title: %s", title.text_content())
 
-        # TODOs: verify detail
+        # verify request background
+        bg_div = page.locator('div[data-test-id="background"]')
+        bg_textarea = bg_div.locator("textarea")
+        assert bg_textarea, "request background is not found"
+        logger.info("request background: %s", bg_textarea.text_content())
 
+        scroll_to_element(bg_textarea)
+        time.sleep(1)
         page.screenshot(path="/tmp/test/request_view.png")
 
     @pytest.mark.ui
     def test_search_request(self):
         request_id = "SPCPMTEST-103671"
 
-        # open page
         page = self.context.new_page()
-        page.goto(f"{self.base_url}/requests-list", timeout=base.wait_page_timeout)
+        page.goto(f"{self.base_url}/requests-list", timeout=conftest.wait_page_timeout)
 
         # verify page title
         title = page.wait_for_selector(
-            'span[data-test-id="title"]', timeout=base.wait_ui_element_timeout
+            'span[data-test-id="title"]', timeout=conftest.wait_ui_element_timeout
         )
         assert title, "page title is not found"
         logger.info("page title: %s", title.text_content())
@@ -86,6 +92,25 @@ class TestFeatureRequest:
         assert request_id == got_request_id, "search request id is not matched"
 
         page.screenshot(path="/tmp/test/request_search.png", full_page=True)
+
+    @pytest.mark.ui
+    def test_nav_to_product_config(self):
+        page = self.context.new_page()
+        page.goto(f"{self.base_url}/requests-list", timeout=conftest.wait_page_timeout)
+
+        # click Settings menu
+        main_menu = page.locator(
+            'ul[id="rc-menu-uuid-66498-1-Request Management-popup]"'
+        )
+        settings_menu_item = main_menu.locator("li").nth(8)
+        assert settings_menu_item, "settings menu is not found"
+        settings_menu_item.click()
+
+        # click POP menu
+        settings_menu = page.locator('ul[id="rc-menu-uuid-66498-1-Settings-popup"]')
+        pop_menu_item = settings_menu.locator('span:has-text("POP")')
+        assert settings_menu_item, "pop menu is not found"
+        pop_menu_item.click()
 
 
 if __name__ == "__main__":
