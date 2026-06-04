@@ -9,10 +9,12 @@ logger = logging.getLogger(__name__)
 
 # Env
 
-wait_page_timeout: Final[int] = 10_000
-wait_ui_element_timeout: Final[int] = 3_000
+wait_short: Final[int] = 1_000
+wait_mid: Final[int] = 3_000
+wait_long: Final[int] = 10_000
 
-base_url_of_request = f"https://{os.getenv("POP_TEST_DOMAIN")}/request-management"
+base_request_url = f"https://{os.getenv("POP_TEST_DOMAIN")}/request-management"
+base_settings_url = f"https://{os.getenv("POP_TEST_DOMAIN")}/pop-requests/settings"
 
 auth_cookies: list = [
     {
@@ -41,7 +43,7 @@ PW_APP: Playwright
 # Pytest Fixutre
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def uiauto_session_setup():
     logger.info("before pop ui auto session")
     global PW_APP

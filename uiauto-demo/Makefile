@@ -25,11 +25,12 @@ collect-fixture-per-test:
 	uv run pytest --fixtures-per-test
 
 run-tests:
-	uv run pytest -s -c pytest.ini uitests/cases/hello_world
-# 	uv run pytest uitests/cases/hello_world/test_hello.py::TestHelloWorld::test_hello_case03
+# 	uv run pytest -s -c pytest.ini uitests/cases/hello_world
+	uv run pytest uitests/cases/hello_world/test_hello.py::TestHelloWorld::test_hello_case03
 
 run-ui-tests:
-	uv run pytest uitests/cases/feat_pop/test_feat_request.py::TestFeatureRequest
+# 	uv run pytest uitests/cases/pop_portal
+	uv run pytest uitests/cases/pop_portal/test_request_feat.py::TestFeatureRequest
 
 run-tests-with-mark:
 	uv run pytest -s -m smoke uitests/cases/hello_world
