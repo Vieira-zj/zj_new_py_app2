@@ -30,7 +30,7 @@ run-tests:
 
 run-ui-tests:
 # 	uv run pytest uitests/cases/pop_portal
-	uv run pytest uitests/cases/pop_portal/test_request_feat.py::TestFeatureRequest
+	uv run pytest uitests/cases/pop_portal/test_request_feat.py::TestFeatureRequest::test_view_request
 
 run-tests-with-mark:
 	uv run pytest -s -m smoke uitests/cases/hello_world
