@@ -11,7 +11,7 @@ class RequestViewPage:
     def get_url(self) -> str:
         return f"{fixture.base_request_url}/view-request"
 
-    def open(self, request_id: str):
+    def open(self, request_id: str) -> None:
         self.page.goto(
             f"{self.get_url()}?issue_key={request_id}", timeout=constant.wait_long
         )

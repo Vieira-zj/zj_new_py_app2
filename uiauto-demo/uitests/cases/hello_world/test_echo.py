@@ -19,6 +19,7 @@ class TestEcho:
     def teardown_class(cls):
         logger.info("teardown class")
 
+    @pytest.mark.ut
     @pytest.mark.smoke
     def test_echo_text(self):
         logger.info("echo: %s", self.echo_text)

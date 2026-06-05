@@ -2,6 +2,7 @@ import logging
 
 from playwright.sync_api import Page, expect
 
+from uimodel import ui_expect
 from uitests.pages import RequestSearchPage, RequestViewPage
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ class FeatureRequestTask:
     def open_request_home_page(self):
         self.request_search_page.open()
         title = self.request_search_page.get_title()
-        expect(title).to_be_visible()
+        ui_expect(title).to_be_visible()
 
     def search_request_by_id(self, request_id: str):
         # focus on input

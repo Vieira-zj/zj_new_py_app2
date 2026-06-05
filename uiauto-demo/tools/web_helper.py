@@ -1,6 +1,9 @@
 import os
 
+from dotenv import load_dotenv
 from playwright.sync_api import BrowserContext, Locator, Page, Playwright
+
+load_dotenv()
 
 
 def new_browser_context(pw: Playwright) -> BrowserContext:

@@ -24,13 +24,6 @@ class TestFeatureRequest:
         cls.context.close()
 
     @pytest.mark.ui
-    @pytest.mark.skip(reason="only for testing")
-    def test_ui_hello_world(self):
-        page = self.context.new_page()
-        feature_task = FeatureRequestTask(page)
-        feature_task.open_request_home_page()
-
-    @pytest.mark.ui
     def test_view_request(self):
         page = self.context.new_page()
         view_page = RequestViewPage(page)

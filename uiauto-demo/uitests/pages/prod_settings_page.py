@@ -12,7 +12,7 @@ class ProductSettingsPage:
     def get_url(self) -> str:
         return f"{fixture.base_settings_url}/product-line"
 
-    def open(self):
+    def open(self) -> None:
         self.page.goto(self.get_url(), timeout=constant.wait_long)
 
     @pw_web(locator='get_by_text("Product Line Management")')
