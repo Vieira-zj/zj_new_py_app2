@@ -5,4 +5,4 @@ from uitests.pages.request_view_page import RequestViewPage
 
 
 def pkg_help():
-    print("include ui elements for page.")
+    print("include ui elements by page.")

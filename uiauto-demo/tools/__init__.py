@@ -3,4 +3,4 @@ from tools.web_helper import new_browser_context, scroll_to_element
 
 
 def pkg_help():
-    print("general tools.")
+    print("ui auto tools.")

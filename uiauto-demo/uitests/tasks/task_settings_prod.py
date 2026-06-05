@@ -1,6 +1,6 @@
 from playwright.sync_api import Page, expect
 
-from tools import constant, scroll_to_element
+from tools import scroll_to_element
 from uitests.pages import LeftNavMenu, ProductSettingsPage
 
 
@@ -12,9 +12,8 @@ class ProductSettingsTask:
         self.left_nav_menu = LeftNavMenu(page)
 
     def open_product_settings_page(self):
-        self.page.goto(self.prod_settings_page.get_url(), timeout=constant.wait_long)
-
-        product_title = self.prod_settings_page.get_page_title()
+        self.prod_settings_page.open()
+        product_title = self.prod_settings_page.get_title()
         expect(product_title).to_be_visible()
 
     def nav_to_pop_product_settings(self):
@@ -37,7 +36,7 @@ class ProductSettingsTask:
         self.page.wait_for_load_state()
 
     def search_by_bizline_id(self, bizline_id: str):
-        product_title = self.page.get_by_text("Product Line Management")
+        product_title = self.prod_settings_page.get_title()
         expect(product_title).to_be_visible()
 
         # input for search

@@ -3,4 +3,4 @@ from uitests.tasks.task_settings_prod import ProductSettingsTask
 
 
 def pkg_help():
-    print("include sub tasks for ui test cases.")
+    print("include ui sub tasks for test cases.")

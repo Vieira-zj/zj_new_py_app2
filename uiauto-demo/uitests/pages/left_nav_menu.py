@@ -10,12 +10,12 @@ class LeftNavMenu:
 
     @pw_web(locator='get_by_role("menuitem", name="setting Settings")')
     def get_settings_menuitem(self) -> Locator:
-        return Locator("")
+        return Locator("mockup")
 
     @pw_web(locator='get_by_role("menuitem", name="POP", exact=True)')
     def get_settings_pop_menuitem(self) -> Locator:
-        return Locator("")
+        return Locator("mockup")
 
     @pw_web(locator='get_by_role("menuitem", name="Product Line")')
     def get_settings_pop_product_menuitem(self) -> Locator:
-        return Locator("")
+        return Locator("mockup")

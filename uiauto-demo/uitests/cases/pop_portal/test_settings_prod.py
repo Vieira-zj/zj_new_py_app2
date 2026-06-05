@@ -28,13 +28,13 @@ class TestProductSettings:
         page = self.context.new_page()
         prod_settings_page = ProductSettingsPage(page)
         feature_task = FeatureRequestTask(page)
-        feature_task.open_request_home_page()
-
         product_task = ProductSettingsTask(page)
+
+        feature_task.open_request_home_page()
         product_task.nav_to_pop_product_settings()
 
         # verify page title
-        product_title = prod_settings_page.get_page_title()
+        product_title = prod_settings_page.get_title()
         expect(product_title).to_be_visible()
 
         page.wait_for_timeout(constant.wait_short)

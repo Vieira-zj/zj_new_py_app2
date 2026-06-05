@@ -33,9 +33,9 @@ def _parse_ui_locator(code: str):
 
 def _web_locator(page: Page | None, locator: str, **kwargs) -> Locator | None:
     if page is None:
-        raise ValueError("page is null")
+        raise ValueError("page object is null")
     if not isinstance(page, Page):
-        raise ValueError("invalid pw page object")
+        raise ValueError("page object is not playwright page")
 
     if len(kwargs) > 0:
         locator = locator.format(**kwargs)
@@ -49,7 +49,7 @@ def _web_locator(page: Page | None, locator: str, **kwargs) -> Locator | None:
         case "locator":
             return page.locator(*loc_args, **loc_kwargs)
         case _:
-            raise ValueError("invalid web ui locator")
+            raise ValueError("not support playwright web locator")
 
 
 def pw_web(locator: str):
@@ -57,7 +57,7 @@ def pw_web(locator: str):
         @wraps(func)
         def wrapper(*args, **kwargs):
             page = vars(args[0])["page"]
-            ele = _web_locator(locator=locator, page=page, **kwargs)
+            ele = _web_locator(page=page, locator=locator, **kwargs)
             return ele
 
         return wrapper
@@ -79,8 +79,8 @@ def appium_ios(locator: str):
 
 
 def parse_ui_locator_test():
-    # locator = 'get_by_role("menuitem", name="setting Settings")'
-    locator = 'page.get_by_role("menuitem", name="setting Settings")'
+    locator = 'get_by_role("menuitem", name="setting Settings")'
+    # locator = 'page.get_by_role("menuitem", name="setting Settings")'
     fn_name, args, kwargs = _parse_ui_locator(locator)
     print(f"fn_name={fn_name}, args=[{args}], kwargs=[{kwargs}]")
 

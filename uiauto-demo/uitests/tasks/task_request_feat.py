@@ -2,7 +2,6 @@ import logging
 
 from playwright.sync_api import Page, expect
 
-from tools import constant
 from uitests.pages import RequestSearchPage, RequestViewPage
 
 logger = logging.getLogger(__name__)
@@ -16,17 +15,15 @@ class FeatureRequestTask:
         self.request_view_page = RequestViewPage(page)
 
     def open_request_view_page(self, request_id: str):
-        self.page.goto(
-            f"{self.request_view_page.get_url()}?issue_key={request_id}",
-            timeout=constant.wait_long,
-        )
+        self.request_view_page.open(request_id)
 
     def open_request_home_page(self):
-        self.page.goto(self.request_search_page.get_url(), timeout=constant.wait_long)
+        self.request_search_page.open()
         title = self.request_search_page.get_title()
         expect(title).to_be_visible()
 
     def search_request_by_id(self, request_id: str):
+        # focus on input
         request_id_input = self.request_search_page.get_request_id_input()
         expect(request_id_input).to_be_visible()
         request_id_input.click()
