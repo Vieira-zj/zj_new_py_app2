@@ -31,3 +31,7 @@ def scroll_to_page_bottom(page: Page):
         new_height = page.evaluate("document.body.scrollHeight")
         if new_height == old_height:
             return
+
+
+if __name__ == "__main__":
+    pass
