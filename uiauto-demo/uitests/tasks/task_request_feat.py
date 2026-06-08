@@ -32,10 +32,11 @@ class FeatureRequestTask:
         # input and select request id
         self.page.keyboard.type(request_id)
         with self.page.expect_response(
-            lambda response: "/request/parent/search" in response.url
+            lambda resp: "/request/parent/search" in resp.url and resp.status == 200
         ) as resp:
-            logger.info("request search resp: %s", resp.value)
-            self.page.keyboard.press("Enter")
+            logger.debug("request search resp: %s", resp.value)
+            if resp.is_done():
+                self.page.keyboard.press("Enter")
 
         # click search
         search_button = self.request_search_page.get_search_button()

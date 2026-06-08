@@ -258,10 +258,53 @@ def test_torch_flat():
 
 
 def test_torch_softmax():
-    t = torch.Tensor([[1, 2, 7], [1.1, 2.4, 6.5]])
+    l1 = [1, 2, 7]
+    t1 = torch.tensor(l1)
+    y1 = t1 / torch.sum(t1).clamp_min(1e-12)
+    print("normalize:", y1, y1.sum())
+
+    l2 = [1.1, 2.4, 6.5]
+    t2 = torch.tensor(l2)
+    y2 = t2 / torch.sum(t1).clamp_min(1e-12)
+    print("normalize:", y2, y2.sum())
+
+    t = torch.Tensor([l1, l2])
     y = torch.softmax(t, dim=-1)
-    print("softmax:", y)
+    print("\nsoftmax:", y)
     print("sum:", torch.sum(y, dim=-1))
+
+
+def test_torch_mask():
+    # mask with zero
+    torch.manual_seed(123)
+    t = torch.rand(6, 6)
+    print("\ntensor:", t)
+
+    mask = torch.tril(torch.ones(6, 6))
+    print("\nmask:", mask)
+    print("result:", t * mask)
+
+    # mask with -inf
+    mask = torch.triu(torch.ones(6, 6), diagonal=1)
+    print("\nmask:", mask)
+    result = t.masked_fill(mask.bool(), -torch.inf)
+    print("result:", result)
+
+
+def test_torch_top_p():
+    t = torch.Tensor([[0.5, 0.09, 0.41]])
+    sorted_t, _ = torch.sort(t, dim=1, descending=True)
+    print("sorted:", sorted_t)
+    cum = torch.cumsum(sorted_t, dim=1)
+    print("cumsum:", cum)
+
+    # include the token that crosses the threshold
+    top_p = 0.8
+    keep = (cum - sorted_t) < top_p
+    print("keep:", keep, keep.sum().item())
+
+    kept_sorted = torch.where(keep, sorted_t, torch.zeros_like(sorted_t))
+    print("keep sorted:", kept_sorted)
 
 
 def test_torch_transform_01():
@@ -338,14 +381,17 @@ if __name__ == "__main__":
     # test_torch_calc_01()
     # test_torch_calc_02()
 
-    test_math_std()
+    # test_math_std()
 
     # test_torch_dot_mm_01()
     # test_torch_dot_mm_02()
 
     # test_torch_stack()
     # test_torch_flat()
+
     # test_torch_softmax()
+    # test_torch_mask()
+    test_torch_top_p()
 
     # test_torch_transform_01()
     # test_torch_transform_02()

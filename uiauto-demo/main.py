@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from dotenv import load_dotenv
 
 from utils import get_logger
