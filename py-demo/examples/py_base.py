@@ -2,8 +2,11 @@
 import dataclasses
 import json
 import random
+import re
+
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import Callable, Final, List, Optional, TypedDict, Union
 
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
@@ -12,6 +15,7 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 
 
 def test_import_lib():
+    # pylint: disable=C0415:import-outside-toplevel
     from utils import base
 
     base.hello_world()
@@ -97,8 +101,26 @@ def test_counter():
     for k, v in counter.items():
         print(f"{k}:{v}")
 
-    k, v = counter.most_common(1)[0]
-    print(f"\nmost common: {k}:{v}")
+    result = counter.most_common(1)
+    if result[0]:
+        k, v = result[0]
+        print(f"\nmost common: {k}:{v}")
+
+
+def test_sorted():
+    # list
+    l = ["ab", "abc", "a"]
+    print("sorted:", sorted(l, key=len))
+
+    # dict
+    d = {
+        "five": "5",
+        "two": "2",
+        "one": "1",
+        "eight": "8",
+    }
+    result = sorted(d.items(), key=lambda item: item[1])
+    print("sorted dict:", result)
 
 
 def test_catch_json_err():
@@ -207,6 +229,58 @@ def test_datacls_and_dict():
     print("person4:", person4.name, person4.age)
 
 
+# example: expr
+
+
+def replace_date(text: str, target_date: str) -> str:
+    # replace all dates with target_date
+    pattern = r"\d{4}-\d{2}-\d{2}"
+    return re.sub(pattern, target_date, text)
+
+
+def test_expr_replace_date():
+    s = "created 2024-10-01, updated 2025-05-18"
+    new_str = replace_date(s, "2026-03-11")
+    print("result:", new_str)
+
+
+# example: datetime
+
+
+def get_next_friday(input_date: str) -> str:
+    dt = datetime.strptime(input_date, "%Y-%m-%d")
+    for _ in range(7):
+        if dt.weekday() + 1 == 5:
+            return dt.strftime("%Y-%m-%d")
+        dt += timedelta(days=1)
+    raise ValueError("not go here")
+
+
+def test_get_next_friday():
+    result = get_next_friday("2026-06-26")
+    print("next friday:", result)
+
+
+def is_weekend(dt: datetime) -> bool:
+    return dt.weekday() >= 5
+
+
+def get_2nd_last_working_day(input_date: str) -> str:
+    dt = datetime.strptime(input_date, "%Y-%m-%d")
+    next_month = datetime.strptime(f"{dt.year}-{dt.month+1:02d}-01", "%Y-%m-%d")
+    result = next_month - timedelta(days=2)
+
+    for _ in range(2):
+        if is_weekend(result):
+            result -= timedelta(days=1)
+    return result.strftime("%Y-%m-%d")
+
+
+def test_get_2nd_last_working_day():
+    result = get_2nd_last_working_day("2025-03-14")
+    print("result:", result)
+
+
 # example: retry
 
 
@@ -244,7 +318,7 @@ def test_my_call_with_retry():
 
 
 if __name__ == "__main__":
-    test_import_lib()
+    # test_import_lib()
 
     # test_cal_division()
     # test_str_padding()
@@ -255,9 +329,16 @@ if __name__ == "__main__":
 
     # test_default_dict()
     # test_counter()
+
+    # test_sorted()
     # test_catch_json_err()
 
     # test_class_with_typeddict()
     # test_datacls_and_dict()
+
+    test_expr_replace_date()
+
+    # test_get_next_friday()
+    # test_get_2nd_last_working_day()
 
     # test_my_call_with_retry()
