@@ -15,6 +15,7 @@ class TestHelloWorldPage:
         logger.info("before hello class")
         cls.context = new_browser_context(conftest.PW_APP)
         cls.context.add_cookies(conftest.auth_cookies)
+        # cls.context.set_extra_http_headers({})
 
     @classmethod
     def teardown_class(cls):

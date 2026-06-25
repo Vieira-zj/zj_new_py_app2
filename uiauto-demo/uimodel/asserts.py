@@ -13,6 +13,7 @@ class UILocatorAssertions(Protocol):
 
 
 def test_ui_asserts_for_pw():
+    # pylint: disable=C0415:import-outside-toplevel
     from playwright.sync_api import LocatorAssertions
 
     def verify(la: UILocatorAssertions):
